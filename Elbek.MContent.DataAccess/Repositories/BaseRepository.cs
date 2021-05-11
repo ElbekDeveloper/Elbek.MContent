@@ -1,4 +1,4 @@
-﻿using Elbek.MContent.DataAccess.Models;
+﻿using Elbek.MContent.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿namespace Elbek.MContent.DataAccess.Models
+﻿namespace Elbek.MContent.DataAccess.Data
 {
     public class Author : BaseEntity
     {

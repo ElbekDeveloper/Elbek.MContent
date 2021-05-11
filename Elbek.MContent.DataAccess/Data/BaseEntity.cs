@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Elbek.MContent.DataAccess.Models
+namespace Elbek.MContent.DataAccess.Data
 {
     public abstract class BaseEntity
     {
