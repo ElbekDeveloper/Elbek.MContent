@@ -1,4 +1,5 @@
 ﻿using Elbek.MContent.DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,21 +7,28 @@ using System.Threading.Tasks;
 
 namespace Elbek.MContent.DataAccess.Repositories
 {
-    public class BaseRepository<TModel> : IRepository<TModel> where TModel : BaseEntity
+    public abstract class BaseRepository<TModel> : IRepository<TModel> where TModel : BaseEntity
     {
-        public IQueryable<TModel> GenerateQuery()
+        protected readonly MContentContext _dbContext;
+
+        public BaseRepository(MContentContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
         }
 
-        public Task<IEnumerable<TModel>> GetAll()
+        public virtual IQueryable<TModel> GenerateQuery()
         {
-            throw new NotImplementedException();
+            return _dbContext.Set<TModel>().AsQueryable();
         }
 
-        public Task<TModel> GetById(Guid id)
+        public virtual async Task<IEnumerable<TModel>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await GenerateQuery().ToListAsync();
+        }
+
+        public virtual async Task<TModel> GetByIdAsync(Guid id)
+        {
+            return await GenerateQuery().SingleOrDefaultAsync(m => m.Id == id);
         }
     }
 }
