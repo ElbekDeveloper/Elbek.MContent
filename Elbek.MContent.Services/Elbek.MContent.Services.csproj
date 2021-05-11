@@ -7,8 +7,10 @@
   <ItemGroup>
     <Folder Include="HostServices\" />
     <Folder Include="CoreServices\" />
-    <Folder Include="Models\" />
-    <Folder Include="ValidationServices\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Elbek.MContent.DataAccess\Elbek.MContent.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
