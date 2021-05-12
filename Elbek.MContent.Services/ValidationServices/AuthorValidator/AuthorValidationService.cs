@@ -7,7 +7,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
 {
     public interface IAuthorValidationService
     {
-
+        MContentValidationResult Validate(AuthorDto authorDto);
         MContentValidationResult Validate(Guid id);
     }
 
@@ -27,14 +27,25 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             {
                 _rules.ValidateIfNullOrEmpty(id.ToString()),
                 _rules.ValidateGuidIfDefault(id)
-            }.Where(e => string.IsNullOrEmpty(e) == false).ToList(); ;
-            if (ValidationResult.Errors.Any() == false)
-            {
-                ValidationResult.IsValid = true;
-            }
+            }.Where(e => string.IsNullOrEmpty(e) == false).ToList();
+
+            ValidationResult.UpdateIsValidFlagOnError();
+
             return ValidationResult;
         }
 
+        public MContentValidationResult Validate(AuthorDto authorDto)
+        {
+            ValidationResult.Errors = new List<string>
+            {
+                _rules.ValidateIfNullOrEmpty(authorDto.Id.ToString()),
+                _rules.ValidateGuidIfDefault(authorDto.Id),
+                _rules.ValidateIfNullOrEmpty(authorDto.Name)
+            }.Where(e => string.IsNullOrEmpty(e) == false).ToList();
 
+            ValidationResult.UpdateIsValidFlagOnError();
+
+            return ValidationResult;
+        }
     }
 }

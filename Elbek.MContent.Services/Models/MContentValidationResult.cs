@@ -23,5 +23,14 @@ namespace Elbek.MContent.Services.Models
         }
         public List<string> Errors { get; set; } = new List<string>();
 
+        public bool UpdateIsValidFlagOnError()
+        {
+            if (Errors.Any() == false)
+            {
+                IsValid = true;
+            }
+            return IsValid;
+        }
+
     }
 }

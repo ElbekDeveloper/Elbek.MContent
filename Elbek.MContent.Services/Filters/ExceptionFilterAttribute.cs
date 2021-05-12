@@ -32,7 +32,8 @@ namespace Elbek.MContent.Services.Filters
                             Errors = new List<string>()
                             {
                                 error.Message
-                            }
+                            },
+                            StatusCode = 400
                         });
                         break;
                     case ValidationException error:
