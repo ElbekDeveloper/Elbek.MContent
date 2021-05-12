@@ -1,4 +1,8 @@
 using Elbek.MContent.DataAccess;
+using Elbek.MContent.DataAccess.Repositories;
+using Elbek.MContent.Services.CoreServices;
+using Elbek.MContent.Services.Filters;
+using Elbek.MContent.Services.ValidationServices.AuthorValidator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
 
 namespace Elbek.MContent.WebHost
 {
@@ -26,11 +31,21 @@ namespace Elbek.MContent.WebHost
                     options.UseSqlServer(Configuration.GetConnectionString("LocalDbConnection"));
                 }
             );
-            services.AddControllers();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(ExceptionFilterAttribute));
+                options.Filters.Add(typeof(ValidationFilterAttribute));
+                options.Filters.Add(typeof(HttpModelResultFilterAttribute));
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Elbek.MContent.WebHost", Version = "v1" });
             });
+            services.AddTransient<IAuthorService, AuthorService>();
+            services.AddTransient<IAuthorRepository, AuthorRepository>();
+            services.AddTransient<IAuthorValidationRules, AuthorValidationRules>();
+            services.AddTransient<IAuthorValidationService, AuthorValidationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
