@@ -30,5 +30,29 @@ namespace Elbek.MContent.DataAccess.Repositories
         {
             return await GenerateQuery().SingleOrDefaultAsync(m => m.Id == id);
         }
+
+        public async Task<TModel> AddAsync(TModel entity)
+        {
+            await _dbContext.Set<TModel>().AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public async Task<TModel> UpdateAsync(TModel entity)
+        {
+            _dbContext.Entry(entity).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public async Task<TModel> DeleteAsync(TModel entity)
+        {
+            _dbContext.Set<TModel>().Remove(entity);
+            await _dbContext.SaveChangesAsync();
+
+            return entity;
+        }
     }
 }

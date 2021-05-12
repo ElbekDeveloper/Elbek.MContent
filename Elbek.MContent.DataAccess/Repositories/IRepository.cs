@@ -11,5 +11,8 @@ namespace Elbek.MContent.DataAccess.Repositories
         IQueryable<TModel> GenerateQuery();
         Task<TModel> GetByIdAsync(Guid id);
         Task<IEnumerable<TModel>> GetAllAsync();
+        Task<TModel> AddAsync(TModel entity);
+        Task<TModel> UpdateAsync(TModel entity);
+        Task<TModel> DeleteAsync(TModel entity);
     }
 }
