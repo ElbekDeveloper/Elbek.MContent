@@ -34,5 +34,13 @@ namespace Elbek.MContent.Services.HostServices
         {
             return Ok(await _service.GetAuthorByIdAsync(id));
         }
+
+        [HttpPost]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author added ", Type = typeof(MContentResult<AuthorDto>))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
+        public async Task<ActionResult<MContentResult<AuthorDto>>> AddAuthor([FromBody] AuthorDto authorDto)
+        {
+            return Ok(await _service.AddAuthorAsync(authorDto));
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.Exceptions;
 using Elbek.MContent.Services.Models;
@@ -14,6 +15,10 @@ namespace Elbek.MContent.Services.CoreServices
     {
         Task<IEnumerable<AuthorDto>> GetAuthorsAsync();
         Task<AuthorDto> GetAuthorByIdAsync(Guid id);
+        Task<AuthorDto> AddAuthorAsync(AuthorDto authorDto);
+        Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto);
+        Task<AuthorDto> DeleteAuthorAsync(AuthorDto authorDto);
+
     }
     public class AuthorService : IAuthorService
     {
@@ -25,6 +30,39 @@ namespace Elbek.MContent.Services.CoreServices
             _repository = repository;
             _mapper = mapper;
             _validationService = validationService;
+        }
+
+        public async Task<AuthorDto> AddAuthorAsync(AuthorDto authorDto)
+        {
+            //Validate
+            var validationResult = _validationService.Validate(authorDto);
+            if (validationResult.IsValid == false)
+            {
+                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
+            }
+            //Check for uniqueness of id
+            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
+            if (authorWithSimilarId != null)
+            {
+                throw new ArgumentException($"Author with Id '{authorDto.Id}' already exists");
+            }
+            //Check for uniqueness of name
+            //TO BE IMPLEMENTED
+            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            if (authorWithSimilarName != null)
+            {
+                throw new ArgumentException($"Author with name '{authorDto.Name}' already exists");
+            }
+            //Map to domain object
+            var author = _mapper.Map<Author>(authorDto);
+
+            await _repository.AddAsync(author);
+            return authorDto;
+        }
+
+        public Task<AuthorDto> DeleteAuthorAsync(AuthorDto authorDto)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
@@ -48,6 +86,11 @@ namespace Elbek.MContent.Services.CoreServices
         {
             var authors = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<AuthorDto>>(authors);
+        }
+
+        public Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }
