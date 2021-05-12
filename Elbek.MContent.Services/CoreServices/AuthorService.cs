@@ -47,7 +47,6 @@ namespace Elbek.MContent.Services.CoreServices
                 throw new ArgumentException($"Author with Id '{authorDto.Id}' already exists");
             }
             //Check for uniqueness of name
-            //TO BE IMPLEMENTED
             var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
             if (authorWithSimilarName != null)
             {
@@ -88,9 +87,37 @@ namespace Elbek.MContent.Services.CoreServices
             return _mapper.Map<IEnumerable<AuthorDto>>(authors);
         }
 
-        public Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto)
+        public async Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto)
         {
-            throw new NotImplementedException();
+            //Validate
+            var validationResult = _validationService.Validate(authorDto);
+            if (validationResult.IsValid == false)
+            {
+                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
+            }
+            //Check for similarity of id
+            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
+            if (authorWithSimilarId == null)
+            {
+                throw new ArgumentException($"Author with Id '{authorDto.Id}' was not found");
+            }
+            //Check for uniqueness of name
+            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            if (authorWithSimilarName != null)
+            {
+                throw new ArgumentException($"Author with Id '{authorWithSimilarName.Id}' already has Name '{authorDto.Name}'");
+            }
+            //Map to domain object
+            var author = _mapper.Map<Author>(authorDto);
+            try
+            {
+                await _repository.UpdateAsync(author);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return authorDto;
         }
     }
 }

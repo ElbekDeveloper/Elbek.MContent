@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -41,6 +42,19 @@ namespace Elbek.MContent.Services.HostServices
         public async Task<ActionResult<MContentResult<AuthorDto>>> AddAuthor([FromBody] AuthorDto authorDto)
         {
             return Ok(await _service.AddAuthorAsync(authorDto));
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author Updated ", Type = typeof(MContentResult<AuthorDto>))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
+        public async Task<ActionResult<MContentResult<AuthorDto>>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
+        {
+            if (id != authorDto.Id)
+            {
+                return BadRequest();
+            }
+            return Ok(await _service.UpdateAuthorAsync(authorDto));
         }
     }
 }

@@ -41,7 +41,8 @@ namespace Elbek.MContent.DataAccess.Repositories
 
         public async Task<TModel> UpdateAsync(TModel entity)
         {
-            _dbContext.Entry(entity).State = EntityState.Modified;
+            var updatedEntity = _dbContext.Set<TModel>().Update(entity);
+            updatedEntity.State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
 
             return entity;
