@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Elbek.MContent.DataAccess.Repositories
 {
-    /// Todo 5 совсем необязательно выносить интерфейс в отдельный файл, можно интерфейс описать в BaseRepository
+/// Todo 5 совсем необязательно выносить интерфейс в отдельный файл, можно интерфейс описать в BaseRepository
 
-    public interface IRepository<TModel> where TModel : BaseEntity
-    {
-        IQueryable<TModel> GenerateQuery();
-        Task<TModel> GetByIdAsync(Guid id);
-        Task<IEnumerable<TModel>> GetAllAsync();
-        Task<TModel> AddAsync(TModel entity);
-        Task<TModel> UpdateAsync(TModel entity);
-        Task<TModel> DeleteAsync(TModel entity);
-    }
+public interface IRepository<TModel> where TModel : BaseEntity
+{
+    IQueryable<TModel> GenerateQuery();
+    Task<TModel> GetByIdAsync(Guid id);
+    Task<IEnumerable<TModel>> GetAllAsync();
+    Task<TModel> AddAsync(TModel entity);
+    Task<TModel> UpdateAsync(TModel entity);
+    Task<TModel> DeleteAsync(TModel entity);
+}
 }
