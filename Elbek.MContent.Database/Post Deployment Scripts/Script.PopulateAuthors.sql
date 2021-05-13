@@ -21,7 +21,8 @@ Post-Deployment Script Template
 -- 2) создать в ней sql файл с кодом на для заполнения авторов.
 
 -- TODO 2
--- скрипт заполнения авторов переделать в MERGE (create/update). Загугли MERGE script to fill initial data
+-- скрипт заполнения авторов переделать в MERGE (create/update). Загугли MERGE script to fill initial data.
+-- можно сделать меньше данных, штук 10 хватит
 
 
 delete from Authors;

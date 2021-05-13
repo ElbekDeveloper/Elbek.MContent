@@ -16,6 +16,9 @@ namespace Elbek.MContent.DataAccess.Repositories
             _dbContext = dbContext;
         }
 
+        /// TODO 6 GenerateQuery - этот метод не генерирует запрос, он какбы предоставляет доступ к данным и служит для построения запросов.
+        /// Лучше назвать его просто Query
+
         public virtual IQueryable<TModel> GenerateQuery()
         {
             return _dbContext.Set<TModel>().AsQueryable();
@@ -23,6 +26,7 @@ namespace Elbek.MContent.DataAccess.Repositories
 
         public virtual async Task<IEnumerable<TModel>> GetAllAsync()
         {
+            /// AsNoTracking() - это хорошо, почитай про Tracking в EntityFramework
             return await GenerateQuery().AsNoTracking().ToListAsync();
         }
 

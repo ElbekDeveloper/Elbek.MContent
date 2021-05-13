@@ -17,7 +17,8 @@ namespace Elbek.MContent.DataAccess.Repositories
 
         public async Task<Author> GetAuthorByName(string name)
         {
-           return await GenerateQuery().SingleOrDefaultAsync(i => i.Name == name);
+            /// TODO 7 добавь .AsNoTracking(), обычно все гет операции(данные которых ты потом не будешь изменять мы не трекаем)
+            return await GenerateQuery().SingleOrDefaultAsync(i => i.Name == name);
         }
     }
 }

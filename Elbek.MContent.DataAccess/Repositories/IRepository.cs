@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Elbek.MContent.DataAccess.Repositories
 {
+    /// Todo 5 совсем необязательно выносить интерфейс в отдельный файл, можно интерфейс описать в BaseRepository
+
     public interface IRepository<TModel> where TModel : BaseEntity
     {
         IQueryable<TModel> GenerateQuery();

@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Elbek.MContent.DataAccess.Migrations
 {
+    ///TODO 4 
+    /// миграции тут нам не нужны, с базой работает проект Database, он должен создавать базу и заполнять ее данными
+
     public partial class AuthorTableCreation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

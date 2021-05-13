@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Elbek.MContent.DataAccess.Migrations
 {
+    ///TODO 4 для чего ты тут используешь MContentContextModelSnapshot ?
+    /// миграции тут нам не нужны, с базой работает проект Database, он должен создавать базу и заполнять ее данными
+
+
     [DbContext(typeof(MContentContext))]
     partial class MContentContextModelSnapshot : ModelSnapshot
     {
