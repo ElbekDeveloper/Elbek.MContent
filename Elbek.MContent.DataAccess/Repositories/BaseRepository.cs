@@ -23,12 +23,12 @@ namespace Elbek.MContent.DataAccess.Repositories
 
         public virtual async Task<IEnumerable<TModel>> GetAllAsync()
         {
-            return await GenerateQuery().ToListAsync();
+            return await GenerateQuery().AsNoTracking().ToListAsync();
         }
 
         public virtual async Task<TModel> GetByIdAsync(Guid id)
         {
-            return await GenerateQuery().SingleOrDefaultAsync(m => m.Id == id);
+            return await GenerateQuery().AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<TModel> AddAsync(TModel entity)
