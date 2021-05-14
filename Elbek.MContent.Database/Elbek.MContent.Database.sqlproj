@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Authors.sql" />
-    <Build Include="dbo\Tables\__EFMigrationsHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Locations\MContentDb.publish.xml" />
