@@ -13,17 +13,6 @@ Post-Deployment Script Template
 /*
    Clear out the existing data
 */
-
--- TODO 1
--- это файл с BuildAction = PostDeploy, но у тебя будет много разных постдеплой скриптов, 
--- поэтому правильне будет вынести скрипты в отдельные sql файлы и эти файлы(скрипты) вызывать в этом файле.
--- 1) создать папку Scrupts
--- 2) создать в ней sql файл с кодом на для заполнения авторов.
-
--- TODO 2
--- скрипт заполнения авторов переделать в MERGE (create/update). Загугли MERGE script to fill initial data
-
-
 delete from Authors;
 
 insert into Authors (id, Name) values ('9d6d2319-5373-4889-965b-27719e148ea5', 'Tomasina Corriea');
