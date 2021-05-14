@@ -10,7 +10,7 @@ namespace Elbek.MContent.DataAccess.Repositories
 
     public interface IRepository<TModel> where TModel : BaseEntity
     {
-        IQueryable<TModel> GenerateQuery();
+        IQueryable<TModel> Query();
         Task<TModel> GetByIdAsync(Guid id);
         Task<IEnumerable<TModel>> GetAllAsync();
         Task<TModel> AddAsync(TModel entity);
