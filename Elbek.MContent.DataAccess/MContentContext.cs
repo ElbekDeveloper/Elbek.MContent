@@ -17,13 +17,13 @@ namespace Elbek.MContent.DataAccess
                 .Property(a => a.Id)
                 .HasColumnName("id")
                 .HasMaxLength(36)
-                .HasColumnType("varchar")
+                .HasColumnType("UNIQUEIDENTIFIER")
                 .IsRequired(true);
 
             modelBuilder.Entity<Author>()
                 .Property(a => a.Name)
                 .HasColumnName("Name")
-                .HasMaxLength(50)
+                .HasMaxLength(55)
                 .HasColumnType("nvarchar")
                 .IsRequired(true);
 
