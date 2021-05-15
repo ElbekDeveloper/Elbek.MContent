@@ -24,3 +24,4 @@ Post-Deployment Script Template
 -- скрипт заполнения авторов переделать в MERGE (create/update). Загугли MERGE script to fill initial data.
 -- можно сделать меньше данных, штук 10 хватит
 
+:r .\PopulateAuthors.sql
