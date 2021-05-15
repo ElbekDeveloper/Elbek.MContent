@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.Models
 {
@@ -33,17 +30,6 @@ namespace Elbek.MContent.Services.Models
             }
         }
         public List<string> Errors { get; set; } = new List<string>();
-
-        ///TODO 2.1 это логика свойства IsValid.
-        /// UpdateIsValidFlagOnError - удалить, логику реализовать в get свойства IsValid
-        public bool UpdateIsValidFlagOnError()
-        {
-            if (Errors.Any() == false)
-            {
-                IsValid = true;
-            }
-            return IsValid;
-        }
 
     }
 }
