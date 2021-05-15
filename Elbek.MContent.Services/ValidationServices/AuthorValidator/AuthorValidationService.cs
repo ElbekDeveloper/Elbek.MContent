@@ -33,8 +33,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
                 _rules.ValidateGuidIfDefault(id)
             }.Where(e => string.IsNullOrEmpty(e) == false).ToList();
 
-            ValidationResult.UpdateIsValidFlagOnError();
-
+        
             return ValidationResult;
         }
 
@@ -46,8 +45,6 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
                 _rules.ValidateGuidIfDefault(authorDto.Id),
                 _rules.ValidateIfNullOrEmpty(authorDto.Name)
             }.Where(e => string.IsNullOrEmpty(e) == false).ToList();
-
-            ValidationResult.UpdateIsValidFlagOnError();
 
             return ValidationResult;
         }
