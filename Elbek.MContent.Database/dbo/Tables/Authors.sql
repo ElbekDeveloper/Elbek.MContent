@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Authors]
 (
-	[Id] VARCHAR(36) NOT NULL PRIMARY KEY, 
-    [Name] uniqueidentifier NOT NULL
+	[Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, 
+    [Name] NVARCHAR(55)  NOT NULL
 )
 
