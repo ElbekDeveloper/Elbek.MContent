@@ -20,6 +20,10 @@ namespace Elbek.MContent.Services.HostServices
         {
             _service = service;
         }
+
+        /// Todo 2.3 все эти методы не должны возвращать ActionResult.
+        /// методы должны возвращать Task<MContentResult<AuthorDto>>
+
         [HttpGet]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Authors", Type = typeof(MContentResult<IEnumerable<AuthorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
@@ -27,12 +31,17 @@ namespace Elbek.MContent.Services.HostServices
         {
             return Ok(await _service.GetAuthorsAsync());
         }
+
         [HttpGet]
         [Route("{id}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author by Id", Type = typeof(MContentResult<IEnumerable<AuthorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<MContentResult<AuthorDto>>> GetAuthorById([FromRoute]Guid id)
         {
+            /// todo 2.4 Ok(), а что если такого автора нет ? OK() все равно вернет код 200
+            /// методы сервиса IAuthorService должны возвращать <MContentResult<AuthorDto>
+            /// не нужно использвать тут  Ok() или BadRequest()
+            /// это касается всех методов этого класса
             return Ok(await _service.GetAuthorByIdAsync(id));
         }
 

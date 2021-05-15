@@ -38,12 +38,25 @@ namespace Elbek.MContent.Services.CoreServices
             var validationResult = _validationService.Validate(authorDto);
             if (validationResult.IsValid == false)
             {
+                /// TODO 2.8 ValidationException нам не нужны.
+                /// все что в папке Filters можно удалить.
+                /// Валидационный сервис должен валидировать обьект, возвращать строки ошибок(если они есть и код (400, 404)), то есть MContentValidationResult
+                /// Если есть валидационные ошибки, то в методу автор сервиса ты должен иметь возможность вернуть юзеру все ошибки, то есть преобразовать MContentValidationResult в MContentResult
+                /// Если валидационных ошибок нет, то дальше автор сервис делает свою работу и возвращает результат
                 throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
             }
+
+            /// TODO 2.5 Check for uniqueness of id и Check for uniqueness of name это валидация
+            /// валидация должна быть в валидационном сервисе
+            /// перенести все что касается валидации в валидационный сервис
+            /// это касается всех методов этого класса
+            
             //Check for uniqueness of id
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
             if (authorWithSimilarId != null)
             {
+                /// TODO 2.7 не нужно делать throw new Exception
+
                 throw new ArgumentException($"Author with Id '{authorDto.Id}' already exists");
             }
             //Check for uniqueness of name

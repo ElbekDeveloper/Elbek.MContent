@@ -21,6 +21,10 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             _rules = rules;
         }
 
+
+        /// TODO 2.6 сдесь у тебя должны быть валидационные методы на каждый метод сервиса, который он валидирует
+        /// создать методы: ValidateCreate, ValidateUpdate, ValidateGetById
+
         public MContentValidationResult Validate(Guid id)
         {
             ValidationResult.Errors = new List<string>
