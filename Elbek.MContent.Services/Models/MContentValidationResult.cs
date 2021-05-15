@@ -10,7 +10,7 @@ namespace Elbek.MContent.Services.Models
     {
         ///TODO 2.2 хардкодить 400 не нужно, что если у тебя будет другой невалидный код, например 404
         /// поле _statusCode здесь тоже не нужно
-        private int _statusCode = 400;
+        private int _statusCode;
         public bool IsValid { get; set; }
         public int StatusCode
         {
