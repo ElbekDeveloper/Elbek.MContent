@@ -8,10 +8,19 @@ namespace Elbek.MContent.Services.Models
 {
     public class MContentValidationResult
     {
-        ///TODO 2.2 хардкодить 400 не нужно, что если у тебя будет другой невалидный код, например 404
-        /// поле _statusCode здесь тоже не нужно
         private int _statusCode;
-        public bool IsValid { get; set; }
+        public bool IsValid
+        {
+            get 
+            {
+                if (Errors.Any() == false)
+                {
+                    IsValid = true;
+                }
+                return IsValid;
+            }
+            set { IsValid = value; }
+        }
         public int StatusCode
         {
             get => _statusCode;
