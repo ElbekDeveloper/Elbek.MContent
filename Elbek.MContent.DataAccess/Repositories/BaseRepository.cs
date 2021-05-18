@@ -11,7 +11,7 @@ namespace Elbek.MContent.DataAccess.Repositories
     {
         IQueryable<TModel> Query();
         Task<TModel> GetByIdAsync(Guid id);
-        Task<IEnumerable<TModel>> GetAllAsync();
+        Task<IList<TModel>> GetAllAsync();
         Task<TModel> AddAsync(TModel entity);
         Task<TModel> UpdateAsync(TModel entity);
         Task<TModel> DeleteAsync(TModel entity);
@@ -34,7 +34,7 @@ namespace Elbek.MContent.DataAccess.Repositories
             return _dbContext.Set<TModel>().AsQueryable();
         }
 
-        public virtual async Task<IEnumerable<TModel>> GetAllAsync()
+        public virtual async Task<IList<TModel>> GetAllAsync()
         {
             return await Query().AsNoTracking().ToListAsync();
         }
