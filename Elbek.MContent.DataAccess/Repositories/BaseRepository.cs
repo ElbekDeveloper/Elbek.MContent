@@ -26,9 +26,6 @@ namespace Elbek.MContent.DataAccess.Repositories
             _dbContext = dbContext;
         }
 
-        /// TODO 6 Query - этот метод не генерирует запрос, он какбы предоставляет доступ к данным и служит для построения запросов.
-        /// Лучше назвать его просто Query
-
         public virtual IQueryable<TModel> Query()
         {
             return _dbContext.Set<TModel>().AsQueryable();
