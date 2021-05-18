@@ -43,5 +43,5 @@ WHEN NOT MATCHED BY TARGET
 THEN 
 INSERT (id,name)
 VALUES (S.id,S.name);
-
+--add update clause 
 DROP TABLE Authors_Sample
