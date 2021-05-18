@@ -27,9 +27,9 @@ namespace Elbek.MContent.Services.HostServices
         [HttpGet]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Authors", Type = typeof(MContentResult<IEnumerable<AuthorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
-        public async Task<ActionResult<MContentResult<AuthorDto>>> GetAuthors()
+        public async Task<MContentResult<IList<AuthorDto>>> GetAuthors()
         {
-            return Ok(await _service.GetAuthorsAsync());
+            return await _service.GetAuthorsAsync();
         }
 
         [HttpGet]

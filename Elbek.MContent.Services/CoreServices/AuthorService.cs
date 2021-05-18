@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
 using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.DataAccess.Repositories;
-using Elbek.MContent.Services.Exceptions;
+using Elbek.MContent.Services.Extensions;
 using Elbek.MContent.Services.Models;
 using Elbek.MContent.Services.ValidationServices.AuthorValidator;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.CoreServices
 {
     public interface IAuthorService
     {
-        Task<IEnumerable<AuthorDto>> GetAuthorsAsync();
+        Task<MContentResult<IList<AuthorDto>>> GetAuthorsAsync();
         Task<AuthorDto> GetAuthorByIdAsync(Guid id);
         Task<AuthorDto> AddAuthorAsync(AuthorDto authorDto);
         Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto);
@@ -25,6 +24,8 @@ namespace Elbek.MContent.Services.CoreServices
         private readonly IAuthorRepository _repository;
         private readonly IMapper _mapper;
         private readonly IAuthorValidationService _validationService;
+        public MContentResult<AuthorDto> ResultDto { get; set; } = new MContentResult<AuthorDto>();
+        public MContentResult<IList<AuthorDto>> ResultListDto { get; set; } = new MContentResult<IList<AuthorDto>>();
         public AuthorService(IAuthorRepository repository, IMapper mapper, IAuthorValidationService validationService)
         {
             _repository = repository;
@@ -43,7 +44,6 @@ namespace Elbek.MContent.Services.CoreServices
                 /// Валидационный сервис должен валидировать обьект, возвращать строки ошибок(если они есть и код (400, 404)), то есть MContentValidationResult
                 /// Если есть валидационные ошибки, то в методу автор сервиса ты должен иметь возможность вернуть юзеру все ошибки, то есть преобразовать MContentValidationResult в MContentResult
                 /// Если валидационных ошибок нет, то дальше автор сервис делает свою работу и возвращает результат
-                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
             }
 
             /// TODO 2.5 Check for uniqueness of id и Check for uniqueness of name это валидация
@@ -79,25 +79,31 @@ namespace Elbek.MContent.Services.CoreServices
 
         public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
         {
+            var author = await _repository.GetByIdAsync(id);
+
             //Validate
-            var validationResult = _validationService.Validate(id);
+            var validationResult = _validationService.ValidateGetById(id, author);
             if (validationResult.IsValid == false)
             {
-                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
+               // throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
             }
-            //Retrive 
-            var author = await _repository.GetByIdAsync(id);
-            if (author == null)
-            {
-               throw new VersionNotFoundException($"Author with '{id}' was not found");
-            }
+
             return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task<IEnumerable<AuthorDto>> GetAuthorsAsync()
+        public async Task<MContentResult<IList<AuthorDto>>> GetAuthorsAsync()
         {
             var authors = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<AuthorDto>>(authors);
+            var validationResult = _validationService.ValidateGetAll(authors);
+
+            if (!validationResult.IsValid)
+            {
+                return ResultExtensions.ConvertFromValidationResult<IList<AuthorDto>>(validationResult);
+            }
+            var authorsDtos = _mapper.Map<IList<AuthorDto>>(authors);
+            ResultListDto.Data = authorsDtos;
+            ResultListDto.StatusCode = (int)StatusCodes.Ok;
+            return ResultListDto;
         }
 
         public async Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto)
@@ -106,7 +112,6 @@ namespace Elbek.MContent.Services.CoreServices
             var validationResult = _validationService.Validate(authorDto);
             if (validationResult.IsValid == false)
             {
-                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
             }
             //Check for similarity of id
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
