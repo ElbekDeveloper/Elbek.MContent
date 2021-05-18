@@ -5,30 +5,15 @@ namespace Elbek.MContent.Services.Models
 {
     public class MContentValidationResult
     {
-        private int _statusCode;
         public bool IsValid
         {
             get 
             {
-                if (Errors.Any() == false)
-                {
-                    IsValid = true;
-                }
-                return IsValid;
+                return !Errors.Any();
             }
-            set { IsValid = value; }
+            set {  }
         }
-        public int StatusCode
-        {
-            get => _statusCode;
-            private set
-            {
-                if (Errors.Any() == false)
-                {
-                    _statusCode = 200;
-                }
-            }
-        }
+        public int StatusCode { get; set; }
         public List<string> Errors { get; set; } = new List<string>();
 
     }
