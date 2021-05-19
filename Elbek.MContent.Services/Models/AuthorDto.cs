@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Elbek.MContent.Services.Models
 {
@@ -6,5 +7,6 @@ namespace Elbek.MContent.Services.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public virtual ICollection<ContentDto> Contents { get; set; }
     }
 }
