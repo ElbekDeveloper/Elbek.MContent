@@ -2,7 +2,7 @@
 
 namespace Elbek.MContent.DataAccess.Data
 {
-    public class AuthorContent
+    public class ContentAuthors
     {
         public Guid Id { get; set; }
         public Guid AuthorId { get; set; }
