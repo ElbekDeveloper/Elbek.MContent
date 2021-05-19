@@ -32,8 +32,13 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
                 _rules.ValidateIfNullOrEmpty(id.ToString()),
                 _rules.ValidateGuidIfDefault(id),
                 _rules.ValidateAuthorWasFound(id, author)
+                // !string.IsNullOrEmpty(e)
             }.Where(e => string.IsNullOrEmpty(e) == false).ToList();
 
+
+            ///TODO 6 ты уже проверяешь автора на нулл в _rules.ValidateAuthorWasFound
+            /// попробуй использовать данные которые тебе возвращают ваидационные рулы для проверки и выставления статус кода
+            /// тоже самое для ValidateUpdateAuthor
             if (author == null)
             {
                 ValidationResult.StatusCode = (int)StatusCodes.NotFound;

@@ -35,10 +35,6 @@ namespace Elbek.MContent.Services.HostServices
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<AuthorDto>> GetAuthorById([FromRoute]Guid id)
         {
-            /// todo 2.4 Ok(), а что если такого автора нет ? OK() все равно вернет код 200
-            /// методы сервиса IAuthorService должны возвращать <MContentResult<AuthorDto>
-            /// не нужно использвать тут  Ok() или BadRequest()
-            /// это касается всех методов этого класса
             return await _service.GetAuthorByIdAsync(id);
         }
 
@@ -50,13 +46,14 @@ namespace Elbek.MContent.Services.HostServices
             return await _service.AddAuthorAsync(authorDto);
         }
 
+
+        /// TODO 2 ActionResult и Ok убрать
         [HttpPut]
         [Route("{id}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author Updated ", Type = typeof(MContentResult<AuthorDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<MContentResult<AuthorDto>>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
         {
-           
             return Ok(await _service.UpdateAuthorAsync(id, authorDto));
         }
     }

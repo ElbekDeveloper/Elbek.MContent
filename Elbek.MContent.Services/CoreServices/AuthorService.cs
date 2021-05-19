@@ -33,10 +33,17 @@ namespace Elbek.MContent.Services.CoreServices
             _mapper = mapper;
             _validationService = validationService;
         }
-
+        /// TODO 5 общее замечание по названию методов
+        /// это AuthorService и в нем есть метод AddAuthorAsync, Author в названии метода уже не нужен
+        /// нужно переименовать в AddAsync или CreateAsync
+        /// и так везде
         public async Task<MContentResult<AuthorDto>> AddAuthorAsync(AuthorDto authorDto)
         {
             //validate
+            /// TODO 4 authorWithSimilarId и authorWithSimilarName не испотльзуются в этом методе
+            /// эти две переменные используются только в валидации
+            /// нужно перенести вызовы репозиториев в валидационный сервис
+            /// тоже самое в методе на Update
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
             var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
 
@@ -47,6 +54,10 @@ namespace Elbek.MContent.Services.CoreServices
             }
             //map to domain object
             var author = _mapper.Map<Author>(authorDto);
+
+            /// TODO 3 зачем тут try catch ?
+            /// удалить
+            /// тоже самое в методе на Update
             try
             {
                 await _repository.AddAsync(author);
@@ -61,6 +72,7 @@ namespace Elbek.MContent.Services.CoreServices
             return ResultDto;
         }
 
+        //удалить
         public Task<AuthorDto> DeleteAuthorAsync(AuthorDto authorDto)
         {
             throw new NotImplementedException();

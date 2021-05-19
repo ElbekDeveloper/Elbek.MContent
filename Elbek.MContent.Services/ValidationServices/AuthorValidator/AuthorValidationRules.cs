@@ -15,6 +15,8 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
     }
     public class AuthorValidationRules : GenericValidationRules, IAuthorValidationRules
     {
+
+        /// TODO 7 используй (сщтвшешщт)?: здесь везде и в базовом классе
         public string ValidateAuthorWasFound(Guid id, Author author)
         {
             if (author == null)
