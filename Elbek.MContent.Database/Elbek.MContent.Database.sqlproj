@@ -73,5 +73,7 @@
     <None Include="Publish Locations\MContentDb.publish.xml" />
     <None Include="Comparisons\DatabaseToSqlProject.Compare.scmp" />
     <None Include="Scripts\PopulateAuthors.sql" />
+    <None Include="Scripts\PopulateContents.sql" />
+    <None Include="Scripts\PopulateContentAuthors.sql" />
   </ItemGroup>
 </Project>
