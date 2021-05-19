@@ -1,22 +1,22 @@
 ﻿using AutoMapper;
 using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.DataAccess.Repositories;
-using Elbek.MContent.Services.Exceptions;
+using Elbek.MContent.Services.Extensions;
 using Elbek.MContent.Services.Models;
 using Elbek.MContent.Services.ValidationServices.AuthorValidator;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.CoreServices
 {
     public interface IAuthorService
     {
-        Task<IEnumerable<AuthorDto>> GetAuthorsAsync();
-        Task<AuthorDto> GetAuthorByIdAsync(Guid id);
-        Task<AuthorDto> AddAuthorAsync(AuthorDto authorDto);
-        Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto);
+        Task<MContentResult<IList<AuthorDto>>> GetAuthorsAsync();
+        Task<MContentResult<AuthorDto>> GetAuthorByIdAsync(Guid id);
+        Task<MContentResult<AuthorDto>> AddAuthorAsync(AuthorDto authorDto);
+        Task<MContentResult<AuthorDto>> UpdateAuthorAsync(Guid id, AuthorDto authorDto);
         Task<AuthorDto> DeleteAuthorAsync(AuthorDto authorDto);
 
     }
@@ -25,6 +25,8 @@ namespace Elbek.MContent.Services.CoreServices
         private readonly IAuthorRepository _repository;
         private readonly IMapper _mapper;
         private readonly IAuthorValidationService _validationService;
+        public MContentResult<AuthorDto> ResultDto { get; set; } = new MContentResult<AuthorDto>();
+        public MContentResult<IList<AuthorDto>> ResultListDto { get; set; } = new MContentResult<IList<AuthorDto>>();
         public AuthorService(IAuthorRepository repository, IMapper mapper, IAuthorValidationService validationService)
         {
             _repository = repository;
@@ -32,31 +34,31 @@ namespace Elbek.MContent.Services.CoreServices
             _validationService = validationService;
         }
 
-        public async Task<AuthorDto> AddAuthorAsync(AuthorDto authorDto)
+        public async Task<MContentResult<AuthorDto>> AddAuthorAsync(AuthorDto authorDto)
         {
-            //Validate
-            var validationResult = _validationService.Validate(authorDto);
-            if (validationResult.IsValid == false)
-            {
-                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
-            }
-            //Check for uniqueness of id
+            //validate
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            if (authorWithSimilarId != null)
-            {
-                throw new ArgumentException($"Author with Id '{authorDto.Id}' already exists");
-            }
-            //Check for uniqueness of name
             var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
-            if (authorWithSimilarName != null)
-            {
-                throw new ArgumentException($"Author with name '{authorDto.Name}' already exists");
-            }
-            //Map to domain object
-            var author = _mapper.Map<Author>(authorDto);
 
-            await _repository.AddAsync(author);
-            return authorDto;
+            var validationResult = _validationService.ValidateAddAuthor(authorDto, authorWithSimilarId, authorWithSimilarName);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertFromValidationResult<AuthorDto>();
+            }
+            //map to domain object
+            var author = _mapper.Map<Author>(authorDto);
+            try
+            {
+                await _repository.AddAsync(author);
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+            ResultDto.Data = authorDto;
+            ResultDto.StatusCode = (int)StatusCodes.Created;
+            return ResultDto;
         }
 
         public Task<AuthorDto> DeleteAuthorAsync(AuthorDto authorDto)
@@ -64,50 +66,48 @@ namespace Elbek.MContent.Services.CoreServices
             throw new NotImplementedException();
         }
 
-        public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
+        public async Task<MContentResult<AuthorDto>> GetAuthorByIdAsync(Guid id)
         {
-            //Validate
-            var validationResult = _validationService.Validate(id);
-            if (validationResult.IsValid == false)
-            {
-                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
-            }
-            //Retrive 
             var author = await _repository.GetByIdAsync(id);
-            if (author == null)
+
+            //Validate
+            var validationResult = _validationService.ValidateGetById(id, author);
+            if (!validationResult.IsValid)
             {
-               throw new VersionNotFoundException($"Author with '{id}' was not found");
+                return validationResult.ConvertFromValidationResult<AuthorDto>();
             }
-            return _mapper.Map<AuthorDto>(author);
+            var authorDto = _mapper.Map<AuthorDto>(author);
+            ResultDto.Data = authorDto;
+            ResultDto.StatusCode = (int)StatusCodes.Ok;
+            return ResultDto;
         }
 
-        public async Task<IEnumerable<AuthorDto>> GetAuthorsAsync()
+        public async Task<MContentResult<IList<AuthorDto>>> GetAuthorsAsync()
         {
             var authors = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<AuthorDto>>(authors);
+            var validationResult = _validationService.ValidateGetAll(authors);
+
+            if (!validationResult.IsValid)
+            {
+               return validationResult.ConvertFromValidationResult<IList<AuthorDto>>();
+            }
+            var authorsDtos = _mapper.Map<IList<AuthorDto>>(authors);
+            ResultListDto.Data = authorsDtos;
+            ResultListDto.StatusCode = (int)StatusCodes.Ok;
+            return ResultListDto;
         }
 
-        public async Task<AuthorDto> UpdateAuthorAsync(AuthorDto authorDto)
+        public async Task<MContentResult<AuthorDto>> UpdateAuthorAsync(Guid id, AuthorDto authorDto)
         {
-            //Validate
-            var validationResult = _validationService.Validate(authorDto);
-            if (validationResult.IsValid == false)
-            {
-                throw new ValidationException(validationResult.Errors, validationResult.StatusCode);
-            }
-            //Check for similarity of id
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            if (authorWithSimilarId == null)
-            {
-                throw new ArgumentException($"Author with Id '{authorDto.Id}' was not found");
-            }
-            //Check for uniqueness of name
             var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
-            if (authorWithSimilarName != null)
+
+            var validationResult = _validationService.ValidateUpdateAuthor(id, authorDto, authorWithSimilarId, authorWithSimilarName);
+            if (!validationResult.IsValid)
             {
-                throw new ArgumentException($"Author with Id '{authorWithSimilarName.Id}' already has Name '{authorDto.Name}'");
+                return validationResult.ConvertFromValidationResult<AuthorDto>();
             }
-            //Map to domain object
+            //map to domain object
             var author = _mapper.Map<Author>(authorDto);
             try
             {
@@ -115,9 +115,12 @@ namespace Elbek.MContent.Services.CoreServices
             }
             catch (Exception e)
             {
+
                 throw new Exception(e.Message);
             }
-            return authorDto;
+            ResultDto.Data = authorDto;
+            ResultDto.StatusCode = (int)StatusCodes.Created;
+            return ResultDto;
         }
     }
 }

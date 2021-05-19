@@ -17,7 +17,7 @@ namespace Elbek.MContent.DataAccess.Repositories
 
         public async Task<Author> GetAuthorByName(string name)
         {
-           return await GenerateQuery().SingleOrDefaultAsync(i => i.Name == name);
+            return await Query().AsNoTracking().SingleOrDefaultAsync(i => i.Name == name);
         }
     }
 }
