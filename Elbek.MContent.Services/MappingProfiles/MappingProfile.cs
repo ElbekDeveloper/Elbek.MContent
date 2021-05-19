@@ -4,12 +4,12 @@ using Elbek.MContent.Services.Models;
 
 namespace Elbek.MContent.Services.MappingProfiles
 {
-    public class MappingProfile : Profile
+public class MappingProfile : Profile
+{
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            CreateMap<Author, AuthorDto>().ReverseMap();
-            CreateMap<Content, ContentDto>().ReverseMap();
-        }
+        CreateMap<Author, AuthorDto>().ReverseMap();
+        CreateMap<Content, ContentDto>().ReverseMap();
     }
+}
 }
