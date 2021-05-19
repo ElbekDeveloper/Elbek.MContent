@@ -1,6 +1,7 @@
 ﻿using Elbek.MContent.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Elbek.MContent.DataAccess
 {
@@ -10,24 +11,12 @@ namespace Elbek.MContent.DataAccess
         {
         }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<Content> Contents { get; set; }
+        public DbSet<AuthorContent> AuthorContents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Author>()
-                .Property(a => a.Id)
-                .HasColumnName("id")
-                .HasMaxLength(36)
-                .HasColumnType("UNIQUEIDENTIFIER")
-                .IsRequired(true);
-
-            modelBuilder.Entity<Author>()
-                .Property(a => a.Name)
-                .HasColumnName("Name")
-                .HasMaxLength(55)
-                .HasColumnType("nvarchar")
-                .IsRequired(true);
-
-
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }
