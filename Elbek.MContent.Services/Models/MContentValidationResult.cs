@@ -3,18 +3,24 @@ using System.Linq;
 
 namespace Elbek.MContent.Services.Models
 {
-    public class MContentValidationResult
+public class MContentValidationResult
+{
+    public bool IsValid
     {
-        public bool IsValid
+        get
         {
-            get 
-            {
-                return !Errors.Any();
-            }
-            set {  }
+            return !Errors.Any();
         }
-        public int StatusCode { get; set; }
-        public List<string> Errors { get; set; } = new List<string>();
-
+        set {  }
     }
+    public int StatusCode {
+        get;
+        set;
+    }
+    public List<string> Errors {
+        get;
+        set;
+    } = new List<string>();
+
+}
 }
