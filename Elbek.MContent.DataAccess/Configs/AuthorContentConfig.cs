@@ -4,13 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Elbek.MContent.DataAccess.Configs
 {
-    public class AuthorContentConfig : IEntityTypeConfiguration<AuthorContent>
+    public class AuthorContentConfig : IEntityTypeConfiguration<ContentAuthors>
     {
-        public void Configure(EntityTypeBuilder<AuthorContent> modelBuilder)
+        public void Configure(EntityTypeBuilder<ContentAuthors> modelBuilder)
         {
             modelBuilder.Property(ac => ac.Id)
                  .HasColumnName("id")
-                 .HasColumnType("UNIQUEIDENTIFIER");
+                 .HasColumnType("UNIQUEIDENTIFIER")
+                 .IsRequired(true);
 
             modelBuilder.Property(ac => ac.AuthorId)
                  .HasColumnName("AuthorId")
@@ -21,7 +22,7 @@ namespace Elbek.MContent.DataAccess.Configs
                  .HasColumnType("UNIQUEIDENTIFIER");
 
             modelBuilder.HasOne(a => a.Author)
-                                .WithMany(ac => ac.AuthorContents)
+                                .WithMany(ac => ac.ContentAuthors)
                                 .HasForeignKey(a => a.AuthorId);
 
             modelBuilder.HasOne(c => c.Content)
