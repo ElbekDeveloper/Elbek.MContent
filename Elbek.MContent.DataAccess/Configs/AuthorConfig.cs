@@ -10,8 +10,7 @@ namespace Elbek.MContent.DataAccess.Configs
         {
             modelBuilder.Property(a => a.Id)
                  .HasColumnName("id")
-                  .HasMaxLength(36)
-                 .HasColumnType("varchar")
+                 .HasColumnType("UNIQUEIDENTIFIER")
                  .IsRequired(true);
 
             modelBuilder.Property(a => a.Name)
