@@ -7,6 +7,16 @@ using System.Threading.Tasks;
 
 namespace Elbek.MContent.DataAccess.Repositories
 {
+    public interface IRepository<TModel> where TModel : BaseEntity
+    {
+        IQueryable<TModel> Query();
+        Task<TModel> GetByIdAsync(Guid id);
+        Task<IList<TModel>> GetAllAsync();
+        Task<TModel> AddAsync(TModel entity);
+        Task<TModel> UpdateAsync(TModel entity);
+        Task<TModel> DeleteAsync(TModel entity);
+    }
+
     public abstract class BaseRepository<TModel> : IRepository<TModel> where TModel : BaseEntity
     {
         protected readonly MContentContext _dbContext;
@@ -16,23 +26,19 @@ namespace Elbek.MContent.DataAccess.Repositories
             _dbContext = dbContext;
         }
 
-        /// TODO 6 GenerateQuery - этот метод не генерирует запрос, он какбы предоставляет доступ к данным и служит для построения запросов.
-        /// Лучше назвать его просто Query
-
-        public virtual IQueryable<TModel> GenerateQuery()
+        public virtual IQueryable<TModel> Query()
         {
             return _dbContext.Set<TModel>().AsQueryable();
         }
 
-        public virtual async Task<IEnumerable<TModel>> GetAllAsync()
+        public virtual async Task<IList<TModel>> GetAllAsync()
         {
-            /// AsNoTracking() - это хорошо, почитай про Tracking в EntityFramework
-            return await GenerateQuery().AsNoTracking().ToListAsync();
+            return await Query().AsNoTracking().ToListAsync();
         }
 
         public virtual async Task<TModel> GetByIdAsync(Guid id)
         {
-            return await GenerateQuery().AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
+            return await Query().AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<TModel> AddAsync(TModel entity)

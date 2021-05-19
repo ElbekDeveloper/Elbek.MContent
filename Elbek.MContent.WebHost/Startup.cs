@@ -1,7 +1,6 @@
 using Elbek.MContent.DataAccess;
 using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.CoreServices;
-using Elbek.MContent.Services.Filters;
 using Elbek.MContent.Services.ValidationServices.AuthorValidator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,12 +31,7 @@ namespace Elbek.MContent.WebHost
                 }
             );
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddControllers(options =>
-            {
-                options.Filters.Add(typeof(ExceptionFilterAttribute));
-                options.Filters.Add(typeof(ValidationFilterAttribute));
-                options.Filters.Add(typeof(HttpModelResultFilterAttribute));
-            });
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Elbek.MContent.WebHost", Version = "v1" });
