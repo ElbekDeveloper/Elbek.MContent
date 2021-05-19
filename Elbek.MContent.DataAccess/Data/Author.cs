@@ -5,10 +5,10 @@ namespace Elbek.MContent.DataAccess.Data
     public class Author : BaseEntity
     {
         public string Name { get; set; }
-        public virtual ICollection<AuthorContent> AuthorContents { get; set; }
+        public virtual ICollection<ContentAuthors> ContentAuthors { get; set; }
         public Author()
         {
-            this.AuthorContents = new HashSet<AuthorContent>();
+            this.ContentAuthors = new HashSet<ContentAuthors>();
         }
     }
 }
