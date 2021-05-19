@@ -10,9 +10,9 @@ namespace Elbek.MContent.DataAccess
         public MContentContext([NotNullAttribute] DbContextOptions options) : base(options)
         {
         }
-        public DbSet<Author> Authors { get; set; }
-        public DbSet<Content> Contents { get; set; }
-        public DbSet<AuthorContent> AuthorContents { get; set; }
+        public virtual DbSet<Author> Authors { get; set; }
+        public virtual DbSet<Content> Contents { get; set; }
+        public virtual DbSet<ContentAuthors> ContentAuthors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
