@@ -17,7 +17,6 @@ namespace Elbek.MContent.Services.CoreServices
         Task<MContentResult<AuthorDto>> GetAuthorByIdAsync(Guid id);
         Task<MContentResult<AuthorDto>> AddAuthorAsync(AuthorDto authorDto);
         Task<MContentResult<AuthorDto>> UpdateAuthorAsync(Guid id, AuthorDto authorDto);
-        Task<AuthorDto> DeleteAuthorAsync(AuthorDto authorDto);
 
     }
     public class AuthorService : IAuthorService
@@ -70,12 +69,6 @@ namespace Elbek.MContent.Services.CoreServices
             ResultDto.Data = authorDto;
             ResultDto.StatusCode = (int)StatusCodes.Created;
             return ResultDto;
-        }
-
-        //удалить
-        public Task<AuthorDto> DeleteAuthorAsync(AuthorDto authorDto)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<MContentResult<AuthorDto>> GetAuthorByIdAsync(Guid id)
