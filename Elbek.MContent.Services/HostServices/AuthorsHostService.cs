@@ -46,15 +46,13 @@ namespace Elbek.MContent.Services.HostServices
             return await _service.AddAsync(authorDto);
         }
 
-
-        /// TODO 2 ActionResult и Ok убрать
         [HttpPut]
         [Route("{id}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author Updated ", Type = typeof(MContentResult<AuthorDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
-        public async Task<ActionResult<MContentResult<AuthorDto>>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
+        public async Task<MContentResult<AuthorDto>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
         {
-            return Ok(await _service.UpdateAsync(id, authorDto));
+            return await _service.UpdateAsync(id, authorDto);
         }
     }
 }
