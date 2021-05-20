@@ -1,4 +1,5 @@
 ﻿using Elbek.MContent.DataAccess.Data;
+using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -11,39 +12,41 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
     {
         MContentValidationResult ValidateUpdateAuthor(Guid id, AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName);
         MContentValidationResult ValidateAddAuthor(AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName);
-        MContentValidationResult ValidateGetById(Guid id, Author author);
+        Task<MContentValidationResult> ValidateGetById(Guid id);
         MContentValidationResult ValidateGetAll(IList<Author> authors);
     }
 
     public class AuthorValidationService : IAuthorValidationService
     {
         private readonly IAuthorValidationRules _rules;
+        private readonly IAuthorRepository _repository;
         public MContentValidationResult ValidationResult { get; private set; } = new MContentValidationResult();
 
-        public AuthorValidationService(IAuthorValidationRules rules)
+        public AuthorValidationService(IAuthorValidationRules rules, IAuthorRepository repository)
         {
             _rules = rules;
+            _repository = repository;
         }
 
-        public MContentValidationResult ValidateGetById(Guid id, Author author)
+        public async Task<MContentValidationResult> ValidateGetById(Guid id)
         {
+            var author = await _repository.GetByIdAsync(id);
+            string idIsEmpty = _rules.ValidateIfNullOrEmpty(id.ToString());
+            string idIsDefault = _rules.ValidateGuidIfDefault(id);
+            string authorWasFound = _rules.ValidateAuthorWasFound(id, author);
+
             ValidationResult.Errors = new List<string>
             {
-                _rules.ValidateIfNullOrEmpty(id.ToString()),
-                _rules.ValidateGuidIfDefault(id),
-                _rules.ValidateAuthorWasFound(id, author)
-                // !string.IsNullOrEmpty(e)
-            }.Where(e => string.IsNullOrEmpty(e) == false).ToList();
+                idIsEmpty,
+                idIsDefault,
+                authorWasFound
+            }.Where(e => !string.IsNullOrEmpty(e)).ToList();
 
-
-            ///TODO 6 ты уже проверяешь автора на нулл в _rules.ValidateAuthorWasFound
-            /// попробуй использовать данные которые тебе возвращают ваидационные рулы для проверки и выставления статус кода
-            /// тоже самое для ValidateUpdateAuthor
-            if (author == null)
+            if (string.IsNullOrEmpty(authorWasFound))
             {
                 ValidationResult.StatusCode = (int)StatusCodes.NotFound;
             }
-            else if (ValidationResult.Errors.Any())
+            else if (string.IsNullOrEmpty(idIsDefault) || string.IsNullOrEmpty(idIsEmpty))
             {
                 ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
             }

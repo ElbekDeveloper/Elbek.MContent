@@ -69,7 +69,6 @@ namespace Elbek.MContent.Services.CoreServices
 
         public async Task<MContentResult<AuthorDto>> GetByIdAsync(Guid id)
         {
-            var author = await _repository.GetByIdAsync(id);
 
             //Validate
             var validationResult = await _validationService.ValidateGetById(id);
@@ -77,7 +76,10 @@ namespace Elbek.MContent.Services.CoreServices
             {
                 return validationResult.ConvertFromValidationResult<AuthorDto>();
             }
+            //Retrieve
+            var author = await _repository.GetByIdAsync(id);
             var authorDto = _mapper.Map<AuthorDto>(author);
+            //Return result
             ResultDto.Data = authorDto;
             ResultDto.StatusCode = (int)StatusCodes.Ok;
             return ResultDto;
