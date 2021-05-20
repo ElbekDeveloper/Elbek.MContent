@@ -9,6 +9,7 @@ namespace Elbek.MContent.DataAccess.Repositories
 {
     public interface IContentRepository: IRepository<Content>
     {
+        Task<IList<Content>> GetByTypeAsync(int type);
 
     }
     public class ContentRepository : BaseRepository<Content>, IContentRepository
@@ -16,7 +17,12 @@ namespace Elbek.MContent.DataAccess.Repositories
         public ContentRepository(MContentContext dbContext) : base(dbContext)
         {
         }
-        
+
+        public async Task<IList<Content>> GetByTypeAsync(int type)
+        {
+            return await Query().Where(c => (int)c.Type == type).ToListAsync();
+        }
+
         public override IQueryable<Content> Query()
         {
             return base.Query().Include(c => c.ContentAuthors).ThenInclude(ca => ca.Author).AsQueryable() ;

@@ -28,5 +28,14 @@ namespace Elbek.MContent.Services.HostServices
         {
             return await _service.GetAllAsync();
         }
+
+        [HttpGet]
+        [Route("{type}")]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Content", Type = typeof(MContentResult<IList<ContentDto>>))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
+        public async Task<MContentResult<IList<ContentDto>>> GetContents(int type)
+        {
+            return await _service.GetByTypeAsync(type);
+        }
     }
 }

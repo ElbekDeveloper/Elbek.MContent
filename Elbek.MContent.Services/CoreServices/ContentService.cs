@@ -63,9 +63,14 @@ namespace Elbek.MContent.Services.CoreServices
             throw new NotImplementedException();
         }
 
-        public Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type)
+        public async Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type)
         {
-            throw new NotImplementedException();
+            var contents = await _repository.GetByTypeAsync(type);
+            var contentDtos = _mapper.Map<IList<ContentDto>>(contents);
+
+            ResultListDto.Data = contentDtos;
+            ResultListDto.StatusCode = (int)StatusCodes.Ok;
+            return ResultListDto;
         }
     }
 }
