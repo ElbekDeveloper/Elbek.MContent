@@ -1,30 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Elbek.MContent.DataAccess.Data
-{
-public class Content
-{
+namespace Elbek.MContent.DataAccess.Data {
+  public class Content {
     public Guid Id {
-        get;
-        set;
+      get;
+      set;
     }
     public string Title {
-        get;
-        set;
+      get;
+      set;
     }
     public ContentType Type {
-        get;
-        set;
+      get;
+      set;
     }
     public virtual ICollection<ContentAuthors> ContentAuthors {
-        get;
-        set;
+      get;
+      set;
     }
 
-    public Content()
-    {
-        this.ContentAuthors = new HashSet<ContentAuthors>();
-    }
-}
+    public Content() { this.ContentAuthors = new HashSet<ContentAuthors>(); }
+  }
 }

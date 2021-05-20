@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Elbek.MContent.Services.Models
-{
-public class ContentDto
-{
+namespace Elbek.MContent.Services.Models {
+  public class ContentDto {
     public Guid Id {
-        get;
-        set;
+      get;
+      set;
     }
     public string Title {
-        get;
-        set;
+      get;
+      set;
     }
     public int Type {
-        get;
-        set;
+      get;
+      set;
     }
     public ICollection<AuthorDto> Authors {
-        get;
-        set;
+      get;
+      set;
     }
-}
+  }
 }
