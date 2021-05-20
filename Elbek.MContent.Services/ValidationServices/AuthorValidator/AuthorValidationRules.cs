@@ -16,43 +16,28 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
     public class AuthorValidationRules : GenericValidationRules, IAuthorValidationRules
     {
 
-        /// TODO 7 используй (сщтвшешщт)?: здесь везде и в базовом классе
         public string ValidateAuthorWasFound(Guid id, Author author)
         {
-            if (author == null)
-            {
-                return $"Author with Id {id} not found";
-            }
-            return string.Empty;
+            return (author == null) ? $"Author with Id {id} not found" : string.Empty;
         }
 
         public string ValidateIfIdsAreSame(Guid idFromRoute, Guid idFromBody)
         {
-            if (idFromRoute != idFromBody)
-            {
-                return $"Id supplied in route '{idFromRoute}' doesn't correspond to that of body '{idFromBody}'";
-            }
-            return string.Empty;
+            return (idFromRoute != idFromBody) 
+                ?
+                $"Id supplied in route '{idFromRoute}' doesn't correspond to that of body '{idFromBody}'"
+                :
+                string.Empty;
         }
 
         public string ValidateUniqueAuthorId(Author authorWithUniqueId)
         {
-
-            if (authorWithUniqueId != null)
-            {
-                return $"Author with Id '{authorWithUniqueId.Id}' already exists";
-            }
-            return string.Empty;
+            return (authorWithUniqueId != null) ? $"Author with Id '{authorWithUniqueId.Id}' already exists" : string.Empty;
         }
 
         public string ValidateUniqueAuthorName(Author authorWithUniqueName)
         {
-
-            if (authorWithUniqueName != null)
-            {
-                return $"Author  '{authorWithUniqueName.Name}' already exists";
-            }
-            return string.Empty;
+            return authorWithUniqueName != null ? $"Author  '{authorWithUniqueName.Name}' already exists" : string.Empty;
         }
     }
 }
