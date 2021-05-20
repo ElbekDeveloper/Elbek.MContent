@@ -72,7 +72,7 @@ namespace Elbek.MContent.Services.CoreServices
             var author = await _repository.GetByIdAsync(id);
 
             //Validate
-            var validationResult = _validationService.ValidateGetById(id, author);
+            var validationResult = await _validationService.ValidateGetById(id);
             if (!validationResult.IsValid)
             {
                 return validationResult.ConvertFromValidationResult<AuthorDto>();
