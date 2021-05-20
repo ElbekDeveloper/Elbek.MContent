@@ -13,6 +13,7 @@ namespace Elbek.MContent.Services.CoreServices
 {
     public interface IContentService : ICoreService<ContentDto>
     {
+        Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type);
 
     }
     public class ContentService : IContentService
@@ -52,12 +53,17 @@ namespace Elbek.MContent.Services.CoreServices
             return ResultListDto;
         }
 
+        public Task<MContentResult<ContentDto>> UpdateAsync(Guid id, ContentDto TModel)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<MContentResult<ContentDto>> GetByIdAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<MContentResult<ContentDto>> UpdateAsync(Guid id, ContentDto TModel)
+        public Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type)
         {
             throw new NotImplementedException();
         }
