@@ -11,12 +11,8 @@ using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.CoreServices
 {
-    public interface IAuthorService
+    public interface IAuthorService : ICoreService<AuthorDto>
     {
-        Task<MContentResult<IList<AuthorDto>>> GetAllAsync();
-        Task<MContentResult<AuthorDto>> GetByIdAsync(Guid id);
-        Task<MContentResult<AuthorDto>> AddAsync(AuthorDto authorDto);
-        Task<MContentResult<AuthorDto>> UpdateAsync(Guid id, AuthorDto authorDto);
 
     }
     public class AuthorService : IAuthorService
