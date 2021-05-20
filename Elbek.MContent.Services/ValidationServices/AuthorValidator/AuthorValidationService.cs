@@ -11,7 +11,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
     public interface IAuthorValidationService
     {
         MContentValidationResult ValidateUpdateAuthor(Guid id, AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName);
-        MContentValidationResult ValidateAddAuthor(AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName);
+        Task<MContentValidationResult> ValidateAdd(AuthorDto authorDto);
         Task<MContentValidationResult> ValidateGetById(Guid id);
         MContentValidationResult ValidateGetAll(IList<Author> authors);
     }
@@ -85,8 +85,12 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             return ValidationResult;
         }
 
-        public MContentValidationResult ValidateAddAuthor(AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName)
+        public async Task<MContentValidationResult> ValidateAdd(AuthorDto authorDto)
         {
+            //Retrive data for validation
+            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
+            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            
             ValidationResult.Errors = new List<string>
             {
                 _rules.ValidateGuidIfDefault(authorDto.Id),

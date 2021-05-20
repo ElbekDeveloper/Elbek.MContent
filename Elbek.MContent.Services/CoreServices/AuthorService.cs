@@ -34,35 +34,18 @@ namespace Elbek.MContent.Services.CoreServices
         }
         public async Task<MContentResult<AuthorDto>> AddAsync(AuthorDto authorDto)
         {
-            //validate
-            /// TODO 4 authorWithSimilarId и authorWithSimilarName не испотльзуются в этом методе
-            /// эти две переменные используются только в валидации
-            /// нужно перенести вызовы репозиториев в валидационный сервис
-            /// тоже самое в методе на Update
-            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
-
-            var validationResult = _validationService.ValidateAddAuthor(authorDto, authorWithSimilarId, authorWithSimilarName);
+            //Validate
+            var validationResult = await _validationService.ValidateAdd(authorDto);
             if (!validationResult.IsValid)
             {
                 return validationResult.ConvertFromValidationResult<AuthorDto>();
             }
-            //map to domain object
-            var author = _mapper.Map<Author>(authorDto);
-
-            /// TODO 3 зачем тут try catch ?
-            /// удалить
-            /// тоже самое в методе на Update
-            try
-            {
-                await _repository.AddAsync(author);
-            }
-            catch (Exception e)
-            {
-
-                throw new Exception(e.Message);
-            }
-            ResultDto.Data = authorDto;
+            //Map to domain object
+            var entityForDb = _mapper.Map<Author>(authorDto);
+            var addedEntity =   await _repository.AddAsync(entityForDb);
+            //Map to dto
+            var resultEntity = _mapper.Map<AuthorDto>(addedEntity);
+            ResultDto.Data = resultEntity;
             ResultDto.StatusCode = (int)StatusCodes.Created;
             return ResultDto;
         }
