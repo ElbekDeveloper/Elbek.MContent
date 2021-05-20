@@ -10,7 +10,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
 {
     public interface IAuthorValidationService
     {
-        MContentValidationResult ValidateUpdateAuthor(Guid id, AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName);
+        Task<MContentValidationResult> ValidateUpdate(Guid id, AuthorDto authorDto);
         Task<MContentValidationResult> ValidateAdd(AuthorDto authorDto);
         Task<MContentValidationResult> ValidateGetById(Guid id);
         MContentValidationResult ValidateGetAll(IList<Author> authors);
@@ -53,19 +53,24 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             return ValidationResult;
         }
 
-        public MContentValidationResult ValidateUpdateAuthor(Guid id ,AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName)
+        public async Task<MContentValidationResult> ValidateUpdate(Guid id, AuthorDto authorDto)
         {
+            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
+            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+
+            string checkIfAuthorWasFound = _rules.ValidateAuthorWasFound(id, authorWithSimilarId);
+            
             ValidationResult.Errors = new List<string>
             {
                 _rules.ValidateIfIdsAreSame(id, authorDto.Id),
-                _rules.ValidateAuthorWasFound(id, authorWithSimilarId),
                 _rules.ValidateUniqueAuthorName(authorWithSimilarName),
+                checkIfAuthorWasFound,
                 _rules.ValidateIfNullOrEmpty(authorDto.Id.ToString()),
                 _rules.ValidateGuidIfDefault(authorDto.Id),
                 _rules.ValidateIfNullOrEmpty(authorDto.Name)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList();
 
-            if (authorWithSimilarId == null)
+            if (string.IsNullOrEmpty(checkIfAuthorWasFound))
             {
                 ValidationResult.StatusCode = (int)StatusCodes.NotFound;
             }

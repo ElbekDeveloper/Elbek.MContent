@@ -85,26 +85,21 @@ namespace Elbek.MContent.Services.CoreServices
 
         public async Task<MContentResult<AuthorDto>> UpdateAsync(Guid id, AuthorDto authorDto)
         {
-            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
 
-            var validationResult = _validationService.ValidateUpdateAuthor(id, authorDto, authorWithSimilarId, authorWithSimilarName);
+
+            var validationResult = await _validationService.ValidateUpdate(id, authorDto);
             if (!validationResult.IsValid)
             {
                 return validationResult.ConvertFromValidationResult<AuthorDto>();
             }
             //map to domain object
-            var author = _mapper.Map<Author>(authorDto);
-            try
-            {
-                await _repository.UpdateAsync(author);
-            }
-            catch (Exception e)
-            {
+            var entityForDb = _mapper.Map<Author>(authorDto);
+            
+            var updatedEntity =  await _repository.UpdateAsync(entityForDb);
+            //Map to dto
+            var resultEntity = _mapper.Map<AuthorDto>(updatedEntity);
 
-                throw new Exception(e.Message);
-            }
-            ResultDto.Data = authorDto;
+            ResultDto.Data = resultEntity;
             ResultDto.StatusCode = (int)StatusCodes.Created;
             return ResultDto;
         }
