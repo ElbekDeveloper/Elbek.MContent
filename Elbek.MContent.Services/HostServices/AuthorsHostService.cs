@@ -26,7 +26,7 @@ namespace Elbek.MContent.Services.HostServices
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<IList<AuthorDto>>> GetAuthors()
         {
-            return await _service.GetAuthorsAsync();
+            return await _service.GetAllAsync();
         }
 
         [HttpGet]
@@ -35,11 +35,7 @@ namespace Elbek.MContent.Services.HostServices
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<AuthorDto>> GetAuthorById([FromRoute]Guid id)
         {
-            /// todo 2.4 Ok(), а что если такого автора нет ? OK() все равно вернет код 200
-            /// методы сервиса IAuthorService должны возвращать <MContentResult<AuthorDto>
-            /// не нужно использвать тут  Ok() или BadRequest()
-            /// это касается всех методов этого класса
-            return await _service.GetAuthorByIdAsync(id);
+            return await _service.GetByIdAsync(id);
         }
 
         [HttpPost]
@@ -47,17 +43,16 @@ namespace Elbek.MContent.Services.HostServices
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<AuthorDto>> AddAuthor([FromBody] AuthorDto authorDto)
         {
-            return await _service.AddAuthorAsync(authorDto);
+            return await _service.AddAsync(authorDto);
         }
 
         [HttpPut]
         [Route("{id}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author Updated ", Type = typeof(MContentResult<AuthorDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
-        public async Task<ActionResult<MContentResult<AuthorDto>>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
+        public async Task<MContentResult<AuthorDto>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
         {
-           
-            return Ok(await _service.UpdateAuthorAsync(id, authorDto));
+            return await _service.UpdateAsync(id, authorDto);
         }
     }
 }

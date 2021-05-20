@@ -9,6 +9,7 @@ namespace Elbek.MContent.Services.MappingProfiles
         public MappingProfile()
         {
             CreateMap<Author, AuthorDto>().ReverseMap();
+            CreateMap<Content, ContentDto>().ReverseMap();
         }
     }
 }

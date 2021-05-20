@@ -1,10 +1,4 @@
-﻿using Elbek.MContent.DataAccess.Data;
-using Elbek.MContent.Services.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Elbek.MContent.Services.Models;
 
 namespace Elbek.MContent.Services.Extensions
 {
@@ -12,11 +6,13 @@ namespace Elbek.MContent.Services.Extensions
     {
         public static MContentResult<T> ConvertFromValidationResult<T>(this MContentValidationResult validationResult)
         {
-            var result = new MContentResult<T>();
+            var result = new MContentResult<T>
+            {
+                Errors = validationResult.Errors,
+                StatusCode = validationResult.StatusCode,
+                Data = default(T)
+            };
 
-            result.Errors = validationResult.Errors;
-            result.StatusCode = validationResult.StatusCode;
-            result.Data = default(T);
             return result;
         }
     }

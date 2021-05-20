@@ -66,10 +66,14 @@
   <ItemGroup>
     <Build Include="dbo\Tables\Authors.sql" />
     <PostDeploy Include="Scripts\Script.PopulateTables.sql" />
+    <Build Include="dbo\Tables\Contents.sql" />
+    <Build Include="dbo\Tables\ContentAuthors.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Locations\MContentDb.publish.xml" />
     <None Include="Comparisons\DatabaseToSqlProject.Compare.scmp" />
     <None Include="Scripts\PopulateAuthors.sql" />
+    <None Include="Scripts\PopulateContents.sql" />
+    <None Include="Scripts\PopulateContentAuthors.sql" />
   </ItemGroup>
 </Project>
