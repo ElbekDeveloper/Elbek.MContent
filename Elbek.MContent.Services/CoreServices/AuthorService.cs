@@ -13,10 +13,10 @@ namespace Elbek.MContent.Services.CoreServices
 {
     public interface IAuthorService
     {
-        Task<MContentResult<IList<AuthorDto>>> GetAuthorsAsync();
-        Task<MContentResult<AuthorDto>> GetAuthorByIdAsync(Guid id);
-        Task<MContentResult<AuthorDto>> AddAuthorAsync(AuthorDto authorDto);
-        Task<MContentResult<AuthorDto>> UpdateAuthorAsync(Guid id, AuthorDto authorDto);
+        Task<MContentResult<IList<AuthorDto>>> GetAllAsync();
+        Task<MContentResult<AuthorDto>> GetByIdAsync(Guid id);
+        Task<MContentResult<AuthorDto>> AddAsync(AuthorDto authorDto);
+        Task<MContentResult<AuthorDto>> UpdateAsync(Guid id, AuthorDto authorDto);
 
     }
     public class AuthorService : IAuthorService
@@ -32,11 +32,7 @@ namespace Elbek.MContent.Services.CoreServices
             _mapper = mapper;
             _validationService = validationService;
         }
-        /// TODO 5 общее замечание по названию методов
-        /// это AuthorService и в нем есть метод AddAuthorAsync, Author в названии метода уже не нужен
-        /// нужно переименовать в AddAsync или CreateAsync
-        /// и так везде
-        public async Task<MContentResult<AuthorDto>> AddAuthorAsync(AuthorDto authorDto)
+        public async Task<MContentResult<AuthorDto>> AddAsync(AuthorDto authorDto)
         {
             //validate
             /// TODO 4 authorWithSimilarId и authorWithSimilarName не испотльзуются в этом методе
@@ -71,7 +67,7 @@ namespace Elbek.MContent.Services.CoreServices
             return ResultDto;
         }
 
-        public async Task<MContentResult<AuthorDto>> GetAuthorByIdAsync(Guid id)
+        public async Task<MContentResult<AuthorDto>> GetByIdAsync(Guid id)
         {
             var author = await _repository.GetByIdAsync(id);
 
@@ -87,7 +83,7 @@ namespace Elbek.MContent.Services.CoreServices
             return ResultDto;
         }
 
-        public async Task<MContentResult<IList<AuthorDto>>> GetAuthorsAsync()
+        public async Task<MContentResult<IList<AuthorDto>>> GetAllAsync()
         {
             var authors = await _repository.GetAllAsync();
             var validationResult = _validationService.ValidateGetAll(authors);
@@ -102,7 +98,7 @@ namespace Elbek.MContent.Services.CoreServices
             return ResultListDto;
         }
 
-        public async Task<MContentResult<AuthorDto>> UpdateAuthorAsync(Guid id, AuthorDto authorDto)
+        public async Task<MContentResult<AuthorDto>> UpdateAsync(Guid id, AuthorDto authorDto)
         {
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
             var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
