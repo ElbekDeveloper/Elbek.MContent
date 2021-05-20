@@ -1,5 +1,6 @@
 ﻿using Elbek.MContent.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,9 +16,10 @@ namespace Elbek.MContent.DataAccess.Repositories
         public ContentRepository(MContentContext dbContext) : base(dbContext)
         {
         }
-        public async override Task<IList<Content>> GetAllAsync()
+        
+        public override IQueryable<Content> Query()
         {
-           return await Query().Include(c => c.ContentAuthors).ThenInclude(ca => ca.Author).ToListAsync();
+            return base.Query().Include(c => c.ContentAuthors).ThenInclude(ca => ca.Author).AsQueryable() ;
         }
     }
 }
