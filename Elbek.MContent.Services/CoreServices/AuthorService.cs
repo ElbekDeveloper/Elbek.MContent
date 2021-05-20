@@ -66,13 +66,14 @@ namespace Elbek.MContent.Services.CoreServices
 
         public async Task<MContentResult<IList<AuthorDto>>> GetAllAsync()
         {
-            var authors = await _repository.GetAllAsync();
-            var validationResult = _validationService.ValidateGetAll(authors);
+            var validationResult = await _validationService.ValidateGetAll();
 
             if (!validationResult.IsValid)
             {
                return validationResult.ConvertFromValidationResult<IList<AuthorDto>>();
             }
+
+            var authors = await _repository.GetAllAsync();
             var authorsDtos = _mapper.Map<IList<AuthorDto>>(authors);
             ResultListDto.Data = authorsDtos;
             ResultListDto.StatusCode = (int)StatusCodes.Ok;
