@@ -65,6 +65,11 @@ namespace Elbek.MContent.Services.CoreServices
 
         public async Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type)
         {
+            var validationResult = _validationService.ValidateGetByType(type);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertFromValidationResult<IList<ContentDto>>();
+            }
             var contents = await _repository.GetByTypeAsync(type);
             var contentDtos = _mapper.Map<IList<ContentDto>>(contents);
 
