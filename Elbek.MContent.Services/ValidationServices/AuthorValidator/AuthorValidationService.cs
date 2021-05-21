@@ -108,7 +108,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
                 _rules.ValidateUniqueAuthorId(authorWithSimilarId),
                 _rules.ValidateUniqueAuthorName(authorWithSimilarName)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList();
-            if (ValidationResult.IsValid)
+            if (!ValidationResult.IsValid)
             {
                 ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
             }
