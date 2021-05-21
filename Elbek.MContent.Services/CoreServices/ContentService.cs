@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.Extensions;
 using Elbek.MContent.Services.Models;
 using Elbek.MContent.Services.ValidationServices.ContentValidator;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.CoreServices
@@ -31,9 +30,23 @@ namespace Elbek.MContent.Services.CoreServices
             _validationService = validationService;
         }
 
-        public Task<MContentResult<ContentDto>> AddAsync(ContentDto TModel)
+        public async Task<MContentResult<ContentDto>> AddAsync(ContentDto contentDto)
         {
-            throw new NotImplementedException();
+            //Validate
+            var validationResult = await _validationService.ValidateAdd(contentDto);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertFromValidationResult<ContentDto>();
+            }
+            //Map to domain object
+            var entityForDb = _mapper.Map<Content>(contentDto);
+            var addedEntity = await _repository.AddAsync(entityForDb);
+            var retrievedEntity = await _repository.GetByIdAsync(addedEntity.Id);
+            //Map to dto
+            var resultEntity = _mapper.Map<ContentDto>(retrievedEntity);
+            ResultDto.Data = resultEntity;
+            ResultDto.StatusCode = (int)StatusCodes.Created;
+            return ResultDto;
         }
 
         public async Task<MContentResult<IList<ContentDto>>> GetAllAsync()
@@ -58,9 +71,21 @@ namespace Elbek.MContent.Services.CoreServices
             throw new NotImplementedException();
         }
 
-        public Task<MContentResult<ContentDto>> GetByIdAsync(Guid id)
+        public async Task<MContentResult<ContentDto>> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var validationResult = await _validationService.ValidateGetById(id);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertFromValidationResult<ContentDto>();
+            }
+
+            //Retrieve
+            var content = await _repository.GetByIdAsync(id);
+            var contentDto = _mapper.Map<ContentDto>(content);
+            //Return result
+            ResultDto.Data = contentDto;
+            ResultDto.StatusCode = (int)StatusCodes.Ok;
+            return ResultDto;
         }
 
         public async Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type)
