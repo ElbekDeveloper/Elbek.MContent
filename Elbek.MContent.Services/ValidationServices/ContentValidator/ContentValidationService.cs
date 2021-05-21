@@ -23,9 +23,29 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
             _rules = rules;
         }
 
-        public Task<MContentValidationResult> ValidateAdd(ContentDto model)
+        public  async Task<MContentValidationResult> ValidateAdd(ContentDto contentDto)
         {
-            throw new NotImplementedException();
+            //Retrive data for validation
+            var contentWithSimilarId = await _repository.GetByIdAsync(contentDto.Id);
+            var contentWithSimilarTitle= await _repository.GetContentByTitle(contentDto.Title, contentDto.Type);
+
+            ValidationResult.Errors = new List<string>
+            {
+                _rules.ValidateGuidIfDefault(contentDto.Id),
+                _rules.ValidateIfNullOrEmpty(contentDto.Id.ToString()),
+                _rules.ValidateUniqueContentId(contentWithSimilarId),
+                _rules.ValidateIfNullOrEmpty(contentDto.Title),
+                _rules.ValidateUniqueTitleOfItsType(contentWithSimilarTitle),
+                _rules.ValidateIfNullOrEmpty(contentDto.Type.ToString()),
+                _rules.ValidateTypeRange(contentDto.Type)
+                //validation for contents should be added
+            }.Where(e => !string.IsNullOrEmpty(e)).ToList();
+
+            if (!ValidationResult.IsValid)
+            {
+                ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
+            }
+            return ValidationResult;
         }
 
         public async Task<MContentValidationResult> ValidateGetAll()
@@ -44,9 +64,29 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
             return ValidationResult;
         }
 
-        public Task<MContentValidationResult> ValidateGetById(Guid id)
+        public async Task<MContentValidationResult> ValidateGetById(Guid id)
         {
-            throw new NotImplementedException();
+            var content = await _repository.GetByIdAsync(id);
+            string idIsEmpty = _rules.ValidateIfNullOrEmpty(id.ToString());
+            string idIsDefault = _rules.ValidateGuidIfDefault(id);
+            string contentWasFound = _rules.ValidateContentWasFound(id, content);
+
+            ValidationResult.Errors = new List<string>
+            {
+                idIsEmpty,
+                idIsDefault,
+                contentWasFound
+            }.Where(e => !string.IsNullOrEmpty(e)).ToList();
+
+            if (string.IsNullOrEmpty(contentWasFound))
+            {
+                ValidationResult.StatusCode = (int)StatusCodes.NotFound;
+            }
+            else if (string.IsNullOrEmpty(idIsDefault) || string.IsNullOrEmpty(idIsEmpty))
+            {
+                ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
+            }
+            return ValidationResult;
         }
 
         public Task<MContentValidationResult> ValidateUpdate(Guid id, ContentDto model)
