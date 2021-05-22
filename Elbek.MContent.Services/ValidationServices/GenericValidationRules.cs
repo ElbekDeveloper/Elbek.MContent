@@ -13,21 +13,12 @@ namespace Elbek.MContent.Services.ValidationServices
     {
         public string ValidateGuidIfDefault(Guid id)
         {
-            if (id == Guid.Empty)
-            {
-                return $"Field {id} is required. Default values are not accepted";
-            }
-            return string.Empty;
+            return (id == Guid.Empty) ? $"Field {id} is required. Default values are not accepted" : string.Empty;
         }
 
         public string ValidateIfNullOrEmpty(string field)
         {
-            if (string.IsNullOrWhiteSpace(field) || string.IsNullOrEmpty(field))
-            {
-                return $"Field {nameof(field)} is required";
-            }
-            return string.Empty;
+            return (string.IsNullOrWhiteSpace(field) || string.IsNullOrEmpty(field)) ? $"Field {nameof(field)} is required" : string.Empty;
         }
-
     }
 }

@@ -15,11 +15,13 @@ namespace Elbek.MContent.DataAccess.Configs
 
             modelBuilder.Property(ac => ac.AuthorId)
                  .HasColumnName("AuthorId")
-                 .HasColumnType("UNIQUEIDENTIFIER");
+                 .HasColumnType("UNIQUEIDENTIFIER")
+                 .IsRequired(true);
 
             modelBuilder.Property(ac => ac.ContentId)
                  .HasColumnName("ContentId")
-                 .HasColumnType("UNIQUEIDENTIFIER");
+                 .HasColumnType("UNIQUEIDENTIFIER")
+                  .IsRequired(true);
 
             modelBuilder.HasOne(a => a.Author)
                                 .WithMany(ac => ac.ContentAuthors)

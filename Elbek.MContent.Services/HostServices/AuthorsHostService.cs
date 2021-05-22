@@ -22,20 +22,20 @@ namespace Elbek.MContent.Services.HostServices
         }
 
         [HttpGet]
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Authors", Type = typeof(MContentResult<IEnumerable<AuthorDto>>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Authors", Type = typeof(MContentResult<IList<AuthorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<IList<AuthorDto>>> GetAuthors()
         {
-            return await _service.GetAuthorsAsync();
+            return await _service.GetAllAsync();
         }
 
         [HttpGet]
-        [Route("{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author by Id", Type = typeof(MContentResult<IEnumerable<AuthorDto>>))]
+        [Route("{id:Guid}")]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author by Id", Type = typeof(MContentResult<IList<AuthorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<AuthorDto>> GetAuthorById([FromRoute]Guid id)
         {
-            return await _service.GetAuthorByIdAsync(id);
+            return await _service.GetByIdAsync(id);
         }
 
         [HttpPost]
@@ -43,18 +43,16 @@ namespace Elbek.MContent.Services.HostServices
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<AuthorDto>> AddAuthor([FromBody] AuthorDto authorDto)
         {
-            return await _service.AddAuthorAsync(authorDto);
+            return await _service.AddAsync(authorDto);
         }
 
-
-        /// TODO 2 ActionResult и Ok убрать
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:Guid}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author Updated ", Type = typeof(MContentResult<AuthorDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
-        public async Task<ActionResult<MContentResult<AuthorDto>>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
+        public async Task<MContentResult<AuthorDto>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)
         {
-            return Ok(await _service.UpdateAuthorAsync(id, authorDto));
+            return await _service.UpdateAsync(id, authorDto);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Elbek.MContent.DataAccess.Repositories
             return await Query().AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<TModel> AddAsync(TModel entity)
+        public virtual async Task<TModel> AddAsync(TModel entity)
         {
             await _dbContext.Set<TModel>().AddAsync(entity);
             await _dbContext.SaveChangesAsync();

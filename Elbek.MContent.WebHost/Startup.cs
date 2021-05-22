@@ -2,6 +2,7 @@ using Elbek.MContent.DataAccess;
 using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.CoreServices;
 using Elbek.MContent.Services.ValidationServices.AuthorValidator;
+using Elbek.MContent.Services.ValidationServices.ContentValidator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,11 @@ namespace Elbek.MContent.WebHost
             services.AddTransient<IAuthorRepository, AuthorRepository>();
             services.AddTransient<IAuthorValidationRules, AuthorValidationRules>();
             services.AddTransient<IAuthorValidationService, AuthorValidationService>();
+
+            services.AddTransient<IContentService, ContentService>();
+            services.AddTransient<IContentRepository, ContentRepository>();
+            services.AddTransient<IContentValidationRules, ContentValidationRules>();
+            services.AddTransient<IContentValidationService, ContentValidationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

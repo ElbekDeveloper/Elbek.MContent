@@ -1,4 +1,5 @@
 ﻿using Elbek.MContent.DataAccess.Data;
+using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -7,62 +8,66 @@ using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
 {
-    public interface IAuthorValidationService
+    public interface IAuthorValidationService : IValidationService<AuthorDto>
     {
-        MContentValidationResult ValidateUpdateAuthor(Guid id, AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName);
-        MContentValidationResult ValidateAddAuthor(AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName);
-        MContentValidationResult ValidateGetById(Guid id, Author author);
-        MContentValidationResult ValidateGetAll(IList<Author> authors);
+
     }
 
     public class AuthorValidationService : IAuthorValidationService
     {
         private readonly IAuthorValidationRules _rules;
+        private readonly IAuthorRepository _repository;
         public MContentValidationResult ValidationResult { get; private set; } = new MContentValidationResult();
 
-        public AuthorValidationService(IAuthorValidationRules rules)
+        public AuthorValidationService(IAuthorValidationRules rules, IAuthorRepository repository)
         {
             _rules = rules;
+            _repository = repository;
         }
 
-        public MContentValidationResult ValidateGetById(Guid id, Author author)
+        public async Task<MContentValidationResult> ValidateGetById(Guid id)
         {
+            var author = await _repository.GetByIdAsync(id);
+            string idIsEmpty = _rules.ValidateIfNullOrEmpty(id.ToString());
+            string idIsDefault = _rules.ValidateGuidIfDefault(id);
+            string authorWasFound = _rules.ValidateAuthorWasFound(id, author);
+
             ValidationResult.Errors = new List<string>
             {
-                _rules.ValidateIfNullOrEmpty(id.ToString()),
-                _rules.ValidateGuidIfDefault(id),
-                _rules.ValidateAuthorWasFound(id, author)
-                // !string.IsNullOrEmpty(e)
-            }.Where(e => string.IsNullOrEmpty(e) == false).ToList();
+                idIsEmpty,
+                idIsDefault,
+                authorWasFound
+            }.Where(e => !string.IsNullOrEmpty(e)).ToList();
 
-
-            ///TODO 6 ты уже проверяешь автора на нулл в _rules.ValidateAuthorWasFound
-            /// попробуй использовать данные которые тебе возвращают ваидационные рулы для проверки и выставления статус кода
-            /// тоже самое для ValidateUpdateAuthor
-            if (author == null)
+            if (string.IsNullOrEmpty(authorWasFound))
             {
                 ValidationResult.StatusCode = (int)StatusCodes.NotFound;
             }
-            else if (ValidationResult.Errors.Any())
+            else if (string.IsNullOrEmpty(idIsDefault) || string.IsNullOrEmpty(idIsEmpty))
             {
                 ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
             }
             return ValidationResult;
         }
 
-        public MContentValidationResult ValidateUpdateAuthor(Guid id ,AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName)
+        public async Task<MContentValidationResult> ValidateUpdate(Guid id, AuthorDto authorDto)
         {
+            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
+            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+
+            string checkIfAuthorWasFound = _rules.ValidateAuthorWasFound(id, authorWithSimilarId);
+            
             ValidationResult.Errors = new List<string>
             {
                 _rules.ValidateIfIdsAreSame(id, authorDto.Id),
-                _rules.ValidateAuthorWasFound(id, authorWithSimilarId),
                 _rules.ValidateUniqueAuthorName(authorWithSimilarName),
+                checkIfAuthorWasFound,
                 _rules.ValidateIfNullOrEmpty(authorDto.Id.ToString()),
                 _rules.ValidateGuidIfDefault(authorDto.Id),
                 _rules.ValidateIfNullOrEmpty(authorDto.Name)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList();
 
-            if (authorWithSimilarId == null)
+            if (string.IsNullOrEmpty(checkIfAuthorWasFound))
             {
                 ValidationResult.StatusCode = (int)StatusCodes.NotFound;
             }
@@ -73,17 +78,28 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             return ValidationResult;
         }
 
-        public MContentValidationResult ValidateGetAll(IList<Author> authors)
+        public async Task<MContentValidationResult> ValidateGetAll()
         {
-            if (ValidationResult.IsValid)
+            var data = await _repository.GetAllAsync();
+
+            if (data.Count >= 0)
             {
                 ValidationResult.StatusCode = (int)StatusCodes.Ok;
             }
+            else
+            {
+                ValidationResult.Errors = new List<string> { "Unhandled exception was thrown during data retrieve " };
+            }
+
             return ValidationResult;
         }
 
-        public MContentValidationResult ValidateAddAuthor(AuthorDto authorDto, Author authorWithSimilarId, Author authorWithSimilarName)
+        public async Task<MContentValidationResult> ValidateAdd(AuthorDto authorDto)
         {
+            //Retrive data for validation
+            var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
+            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            
             ValidationResult.Errors = new List<string>
             {
                 _rules.ValidateGuidIfDefault(authorDto.Id),
@@ -92,7 +108,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
                 _rules.ValidateUniqueAuthorId(authorWithSimilarId),
                 _rules.ValidateUniqueAuthorName(authorWithSimilarName)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList();
-            if (ValidationResult.IsValid)
+            if (!ValidationResult.IsValid)
             {
                 ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
             }
