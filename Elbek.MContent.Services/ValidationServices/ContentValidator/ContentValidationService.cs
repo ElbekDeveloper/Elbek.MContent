@@ -48,8 +48,8 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         public  async Task<MContentValidationResult> ValidateAdd(ContentDto contentDto)
         {
             //Retrive data for validation
-            var contentWithSimilarId = await _contentRepository.GetByIdAsync(contentDto.Id);
-            var contentWithSimilarTitle= await _contentRepository.GetContentByTitle(contentDto.Title, contentDto.Type);
+            var contentWithSimilarId = await _contentRepository.GetByIdAsync(contentDto.Id);//тут можно в запросе для валидации использовать Any(), чтобы не возврашать сущность, она все равно тут не нужна 
+            var contentWithSimilarTitle= await _contentRepository.GetContentByTitle(contentDto.Title, contentDto.Type); // смотри выше
             var unmatchedAuthorsInDb = await GetUnmatchedAuthorsAsync(contentDto.Authors);
 
             ValidationResult.Errors = new List<string>
@@ -82,7 +82,7 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
                 ValidationResult.StatusCode = (int)StatusCodes.Ok;
             }
             else
-            {
+            {//убрать, смотри валидацию авторов
                 ValidationResult.Errors = new List<string> { "Unhandled exception was thrown during data retrieve " };
             }
 

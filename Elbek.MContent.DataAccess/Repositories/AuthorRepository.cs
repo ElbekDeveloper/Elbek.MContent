@@ -15,7 +15,8 @@ namespace Elbek.MContent.DataAccess.Repositories
         public AuthorRepository(MContentContext dbContext) : base(dbContext)
         {
         }
-        
+
+        /// rename to GetByName
         public async Task<Author> GetAuthorByName(string name)
         {
             return await Query().AsNoTracking().SingleOrDefaultAsync(i => i.Name == name);

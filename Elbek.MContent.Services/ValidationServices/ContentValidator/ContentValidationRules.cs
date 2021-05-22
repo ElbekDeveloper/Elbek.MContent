@@ -13,6 +13,8 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
     }
     public class ContentValidationRules : GenericValidationRules, IContentValidationRules
     {
+
+        //вынеси все валидационные сообщения в отдельный класс
         public string ValidateUniqueContentId(Content contentWithUniqueId)
         {
             return (contentWithUniqueId != null) ? $"Content with Id '{contentWithUniqueId.Id}' already exists" : string.Empty;
@@ -21,6 +23,18 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         public string ValidateTypeRange(int type)
         {
             var types = Enum.GetNames(typeof(ContentTypeDto));
+
+            //а что если у тебя в enum числа будет не стандартные ?
+            //например
+            //public enum ContentTypeDto
+            //{
+            //    Book = 14,
+            //    Song = 0,
+            //    Movie = 100,
+            //    Podcast = 42
+            //}
+            //
+            //валидацию переделать
             if (type > types.Length - 1
                 || type < 0)
             {
@@ -31,7 +45,8 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
 
         public string ValidateUniqueTitleOfItsType(Content contentWithUniqueTitle)
         {
-            var types = Enum.GetNames(typeof(ContentTypeDto));
+            var types = Enum.GetNames(typeof(ContentTypeDto));                                          ////а что если у тебя в enum числа будет не стандартные ?
+                                                                                                        //сообщение переделать
             return (contentWithUniqueTitle != null) ? $"Content '{contentWithUniqueTitle}' with Type{types[(int)contentWithUniqueTitle.Type]} already exists" : string.Empty;
         }
 

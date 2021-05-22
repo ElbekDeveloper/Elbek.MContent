@@ -21,7 +21,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
     public class AuthorValidationRules : GenericValidationRules, IAuthorValidationRules
 
     {
-
+        //в конце каждого сообщения нужна точка ('.')
         public string ValidateAuthorWasFound(Guid id, Author author)
         {
             return (author == null) ? $"Author with Id {id} not found" : string.Empty;

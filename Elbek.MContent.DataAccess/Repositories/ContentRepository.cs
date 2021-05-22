@@ -20,10 +20,11 @@ namespace Elbek.MContent.DataAccess.Repositories
         }
 
         public async Task<IList<Content>> GetByTypeAsync(int type)
-        {
+        {// add .AsNoTracking()
             return await Query().Where(c => (int)c.Type == type).ToListAsync();
         }
 
+        //rename to GetByTitle
         public async Task<Content> GetContentByTitle(string title, int type)
         {
             return await Query().AsNoTracking().SingleOrDefaultAsync(c => c.Title == title && (int)c.Type == type);
