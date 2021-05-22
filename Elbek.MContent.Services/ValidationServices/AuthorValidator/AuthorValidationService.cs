@@ -10,7 +10,6 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
 {
     public interface IAuthorValidationService : IValidationService<AuthorDto>
     {
-
     }
 
     public class AuthorValidationService : IAuthorValidationService
@@ -114,5 +113,6 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             }
             return ValidationResult;
         }
+
     }
 }
