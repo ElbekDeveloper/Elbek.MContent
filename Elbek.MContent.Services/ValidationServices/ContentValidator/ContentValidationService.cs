@@ -1,7 +1,10 @@
-﻿using Elbek.MContent.DataAccess.Repositories;
+﻿using Elbek.MContent.DataAccess.Data;
+using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.Models;
+using Elbek.MContent.Services.ValidationServices.AuthorValidator;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,32 +16,54 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
     }
     public class ContentValidationService : IContentValidationService
     {
-        private readonly IContentRepository _repository;
-        private readonly IContentValidationRules _rules;
+        private readonly IContentRepository _contentRepository;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly IContentValidationRules _contentRules;
+        private readonly IAuthorValidationRules _authorRules;
+
         public MContentValidationResult ValidationResult { get; private set; } = new MContentValidationResult();
 
-        public ContentValidationService(IContentRepository repository, IContentValidationRules rules)
+        public ContentValidationService(IContentRepository repository, IContentValidationRules rules, IAuthorValidationRules authorRules, IAuthorRepository authorRepository)
         {
-            _repository = repository;
-            _rules = rules;
+            _contentRepository = repository;
+            _contentRules = rules;
+            _authorRules = authorRules;
+            _authorRepository = authorRepository;
         }
+        public async Task<ICollection<AuthorDto>> GetUnmatchedAuthorsAsync(ICollection<AuthorDto> authorDtos)
+        {
+            throw new NotImplementedException();
+            var unmatchingAuthorsInDb = new Collection<AuthorDto>();
+            //Validate authors existence in db
+            foreach (var authorDto in authorDtos)
+            {
+                var hasDefaultId = _authorRules.ValidateGuidIfDefault(authorDto.Id);
+                if (!string.IsNullOrEmpty(hasDefaultId))
+                {
 
+                }
+            }
+            return unmatchingAuthorsInDb;
+        }
         public  async Task<MContentValidationResult> ValidateAdd(ContentDto contentDto)
         {
             //Retrive data for validation
-            var contentWithSimilarId = await _repository.GetByIdAsync(contentDto.Id);
-            var contentWithSimilarTitle= await _repository.GetContentByTitle(contentDto.Title, contentDto.Type);
+            var contentWithSimilarId = await _contentRepository.GetByIdAsync(contentDto.Id);
+            var contentWithSimilarTitle= await _contentRepository.GetContentByTitle(contentDto.Title, contentDto.Type);
+            var unmatchedAuthorsInDb = await GetUnmatchedAuthorsAsync(contentDto.Authors);
 
             ValidationResult.Errors = new List<string>
             {
-                _rules.ValidateGuidIfDefault(contentDto.Id),
-                _rules.ValidateIfNullOrEmpty(contentDto.Id.ToString()),
-                _rules.ValidateUniqueContentId(contentWithSimilarId),
-                _rules.ValidateIfNullOrEmpty(contentDto.Title),
-                _rules.ValidateUniqueTitleOfItsType(contentWithSimilarTitle),
-                _rules.ValidateIfNullOrEmpty(contentDto.Type.ToString()),
-                _rules.ValidateTypeRange(contentDto.Type)
-                //validation for contents should be added
+                _contentRules.ValidateGuidIfDefault(contentDto.Id),
+                _contentRules.ValidateIfNullOrEmpty(contentDto.Id.ToString()),
+                _contentRules.ValidateUniqueContentId(contentWithSimilarId),
+                _contentRules.ValidateIfNullOrEmpty(contentDto.Title),
+                _contentRules.ValidateUniqueTitleOfItsType(contentWithSimilarTitle),
+                _contentRules.ValidateIfNullOrEmpty(contentDto.Type.ToString()),
+                _contentRules.ValidateTypeRange(contentDto.Type),
+                _authorRules.ValidateIfAnyAuthorExists(contentDto.Authors),
+                _authorRules.ValidateUnmatchedAuthors(unmatchedAuthorsInDb),
+                _authorRules.ValidateAgainstDuplicates(contentDto.Authors)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList();
 
             if (!ValidationResult.IsValid)
@@ -50,7 +75,7 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
 
         public async Task<MContentValidationResult> ValidateGetAll()
         {
-            var data = await _repository.GetAllAsync();
+            var data = await _contentRepository.GetAllAsync();
 
             if (data.Count >= 0)
             {
@@ -66,10 +91,10 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
 
         public async Task<MContentValidationResult> ValidateGetById(Guid id)
         {
-            var content = await _repository.GetByIdAsync(id);
-            string idIsEmpty = _rules.ValidateIfNullOrEmpty(id.ToString());
-            string idIsDefault = _rules.ValidateGuidIfDefault(id);
-            string contentWasFound = _rules.ValidateContentWasFound(id, content);
+            var content = await _contentRepository.GetByIdAsync(id);
+            string idIsEmpty = _contentRules.ValidateIfNullOrEmpty(id.ToString());
+            string idIsDefault = _contentRules.ValidateGuidIfDefault(id);
+            string contentWasFound = _contentRules.ValidateContentWasFound(id, content);
 
             ValidationResult.Errors = new List<string>
             {
@@ -98,8 +123,8 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         {
             ValidationResult.Errors = new List<string>
             {
-                _rules.ValidateTypeRange(type),
-                _rules.ValidateIfNullOrEmpty(type.ToString())
+                _contentRules.ValidateTypeRange(type),
+                _contentRules.ValidateIfNullOrEmpty(type.ToString())
             }.Where(e => !string.IsNullOrEmpty(e)).ToList(); ;
 
             if (ValidationResult.Errors.Any())
