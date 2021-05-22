@@ -22,7 +22,7 @@ namespace Elbek.MContent.Services.HostServices
         }
 
         [HttpGet]
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Authors", Type = typeof(MContentResult<IEnumerable<AuthorDto>>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Authors", Type = typeof(MContentResult<IList<AuthorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<IList<AuthorDto>>> GetAuthors()
         {
@@ -30,8 +30,8 @@ namespace Elbek.MContent.Services.HostServices
         }
 
         [HttpGet]
-        [Route("{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author by Id", Type = typeof(MContentResult<IEnumerable<AuthorDto>>))]
+        [Route("{id:Guid}")]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author by Id", Type = typeof(MContentResult<IList<AuthorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<AuthorDto>> GetAuthorById([FromRoute]Guid id)
         {
@@ -47,7 +47,7 @@ namespace Elbek.MContent.Services.HostServices
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:Guid}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Author Updated ", Type = typeof(MContentResult<AuthorDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<AuthorDto>> UpdateAuthor([FromRoute][Required] Guid id, [FromBody][Required] AuthorDto authorDto)

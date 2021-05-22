@@ -6,17 +6,12 @@ using Elbek.MContent.Services.Models;
 using Elbek.MContent.Services.ValidationServices.AuthorValidator;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.CoreServices
 {
-    public interface IAuthorService
+    public interface IAuthorService : ICoreService<AuthorDto>
     {
-        Task<MContentResult<IList<AuthorDto>>> GetAllAsync();
-        Task<MContentResult<AuthorDto>> GetByIdAsync(Guid id);
-        Task<MContentResult<AuthorDto>> AddAsync(AuthorDto authorDto);
-        Task<MContentResult<AuthorDto>> UpdateAsync(Guid id, AuthorDto authorDto);
 
     }
     public class AuthorService : IAuthorService
@@ -70,13 +65,14 @@ namespace Elbek.MContent.Services.CoreServices
 
         public async Task<MContentResult<IList<AuthorDto>>> GetAllAsync()
         {
-            var authors = await _repository.GetAllAsync();
-            var validationResult = _validationService.ValidateGetAll(authors);
+            var validationResult = await _validationService.ValidateGetAll();
 
             if (!validationResult.IsValid)
             {
                return validationResult.ConvertFromValidationResult<IList<AuthorDto>>();
             }
+
+            var authors = await _repository.GetAllAsync();
             var authorsDtos = _mapper.Map<IList<AuthorDto>>(authors);
             ResultListDto.Data = authorsDtos;
             ResultListDto.StatusCode = (int)StatusCodes.Ok;

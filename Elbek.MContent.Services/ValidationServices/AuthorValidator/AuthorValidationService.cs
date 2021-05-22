@@ -8,12 +8,9 @@ using System.Threading.Tasks;
 
 namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
 {
-    public interface IAuthorValidationService
+    public interface IAuthorValidationService : IValidationService<AuthorDto>
     {
-        Task<MContentValidationResult> ValidateUpdate(Guid id, AuthorDto authorDto);
-        Task<MContentValidationResult> ValidateAdd(AuthorDto authorDto);
-        Task<MContentValidationResult> ValidateGetById(Guid id);
-        MContentValidationResult ValidateGetAll(IList<Author> authors);
+
     }
 
     public class AuthorValidationService : IAuthorValidationService
@@ -81,12 +78,19 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             return ValidationResult;
         }
 
-        public MContentValidationResult ValidateGetAll(IList<Author> authors)
+        public async Task<MContentValidationResult> ValidateGetAll()
         {
-            if (ValidationResult.IsValid)
+            var data = await _repository.GetAllAsync();
+
+            if (data.Count >= 0)
             {
                 ValidationResult.StatusCode = (int)StatusCodes.Ok;
             }
+            else
+            {
+                ValidationResult.Errors = new List<string> { "Unhandled exception was thrown during data retrieve " };
+            }
+
             return ValidationResult;
         }
 
@@ -104,7 +108,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
                 _rules.ValidateUniqueAuthorId(authorWithSimilarId),
                 _rules.ValidateUniqueAuthorName(authorWithSimilarName)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList();
-            if (ValidationResult.IsValid)
+            if (!ValidationResult.IsValid)
             {
                 ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
             }
