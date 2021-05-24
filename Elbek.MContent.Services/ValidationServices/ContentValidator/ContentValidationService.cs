@@ -77,14 +77,9 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         {
             var data = await _contentRepository.GetAllAsync();
 
-            if (data.Count >= 0)
-            {
-                ValidationResult.StatusCode = (int)StatusCodes.Ok;
-            }
-            else
-            {//убрать, смотри валидацию авторов
-                ValidationResult.Errors = new List<string> { "Unhandled exception was thrown during data retrieve " };
-            }
+
+            ValidationResult.StatusCode = (int)StatusCodes.Ok;
+
 
             return ValidationResult;
         }
