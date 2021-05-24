@@ -17,12 +17,13 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         //вынеси все валидационные сообщения в отдельный класс
         public string ValidateUniqueContentId(Content contentWithUniqueId)
         {
-            return (contentWithUniqueId != null) ? $"Content with Id '{contentWithUniqueId.Id}' already exists" : string.Empty;
+            return (contentWithUniqueId != null) ? ValidationErrorMessages.EntityWithIdExists<Content>(contentWithUniqueId.Id) : string.Empty;
         }
 
         public string ValidateTypeRange(int type)
         {
-            var types = Enum.GetNames(typeof(ContentTypeDto));
+            throw new NotImplementedException();
+            string[] types = Enum.GetNames(typeof(ContentType));
 
             //а что если у тебя в enum числа будет не стандартные ?
             //например
@@ -38,7 +39,7 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
             if (type > types.Length - 1
                 || type < 0)
             {
-                return $"Type '{type}' should have one of the following values: {string.Join(", ", types)}";
+                //return InvalidTypeRange(type, types);
             }
             return string.Empty;
         }
@@ -47,12 +48,16 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         {
             var types = Enum.GetNames(typeof(ContentTypeDto));                                          ////а что если у тебя в enum числа будет не стандартные ?
                                                                                                         //сообщение переделать
-            return (contentWithUniqueTitle != null) ? $"Content '{contentWithUniqueTitle}' with Type{types[(int)contentWithUniqueTitle.Type]} already exists" : string.Empty;
+            return (contentWithUniqueTitle != null) 
+                ?
+                ValidationErrorMessages.InvalidTitleForThisType(contentWithUniqueTitle.Title, types[(int)contentWithUniqueTitle.Type]) 
+                :
+                string.Empty;
         }
 
         public string ValidateContentWasFound(Guid id, Content content)
         {
-            return (content == null) ? $"Content with Id {id} not found" : string.Empty;
+            return (content == null) ? ValidationErrorMessages.EntityNotFound<Content>(id) : string.Empty;
         }
     }
 }

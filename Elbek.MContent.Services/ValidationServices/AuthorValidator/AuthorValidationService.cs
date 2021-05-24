@@ -81,11 +81,8 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         {
             var data = await _repository.GetAllAsync();
 
-
             ValidationResult.StatusCode = (int)StatusCodes.Ok;
             
-
-
             return ValidationResult;
         }
 

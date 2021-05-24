@@ -21,14 +21,13 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
     public class AuthorValidationRules : GenericValidationRules, IAuthorValidationRules
 
     {
-        //в конце каждого сообщения нужна точка ('.')
         public string ValidateAuthorWasFound(Guid id, Author author)
         {
-            return (author == null) ? $"Author with Id {id} not found" : string.Empty;
+            return (author == null) ? ValidationErrorMessages.EntityNotFound<Author>(id) : string.Empty;
         }
         public string ValidateAuthorWasFound(string name, Author author)
         {
-            return (author == null) ? $"Author with Name {name} not found" : string.Empty;
+            return (author == null) ? ValidationErrorMessages.AuthorNotFound(name) : string.Empty;
         }
         public string ValidateAgainstDuplicates(ICollection<AuthorDto> authorDtos)
         {
@@ -36,33 +35,33 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
                                                           .Where(g => g.Count() > 1)
                                                           .SelectMany(g => g);
 
-            return duplicates.Any() ? $"Authors cannot contain duplicates" : string.Empty;
+            return duplicates.Any() ? ValidationErrorMessages.DuplicateAuthors() : string.Empty;
         }
 
 
 
         public string ValidateIfAnyAuthorExists(ICollection<AuthorDto> authorDtos)
         {
-            return !authorDtos.Any() ? $"At least, one author required" : string.Empty;
+            return !authorDtos.Any() ? ValidationErrorMessages.EntityRequired<Author>() : string.Empty;
         }
 
         public string ValidateIfIdsAreSame(Guid idFromRoute, Guid idFromBody)
         {
-            return (idFromRoute != idFromBody) 
+            return (idFromRoute != idFromBody)
                 ?
-                $"Id supplied in route '{idFromRoute}' doesn't correspond to that of body '{idFromBody}'"
+               ValidationErrorMessages.UnmatchingIds(idFromRoute, idFromBody)
                 :
                 string.Empty;
         }
 
         public string ValidateUniqueAuthorId(Author authorWithUniqueId)
         {
-            return (authorWithUniqueId != null) ? $"Author with Id '{authorWithUniqueId.Id}' already exists" : string.Empty;
+            return (authorWithUniqueId != null) ? ValidationErrorMessages.EntityWithIdExists<Author>(authorWithUniqueId.Id) : string.Empty;
         }
 
         public string ValidateUniqueAuthorName(Author authorWithUniqueName)
         {
-            return authorWithUniqueName != null ? $"Author  '{authorWithUniqueName.Name}' already exists" : string.Empty;
+            return authorWithUniqueName != null ? ValidationErrorMessages.AuthorExists(authorWithUniqueName.Name) : string.Empty;
         }
 
         public string ValidateUnmatchedAuthors(ICollection<AuthorDto> authorDtos)
@@ -70,7 +69,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             var ids = string.Join(", ", authorDtos.Select(a => a.Id));
             var names = string.Join(", ", authorDtos.Select(a => a.Name));
 
-            return authorDtos != null ? $"Author with {ids} or {names} was not found" : string.Empty;
+            return authorDtos != null ? ValidationErrorMessages.AuthorNotFound(ids, names) : string.Empty;
         }
     }
 }
