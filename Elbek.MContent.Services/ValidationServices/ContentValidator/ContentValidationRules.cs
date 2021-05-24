@@ -14,7 +14,6 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
     public class ContentValidationRules : GenericValidationRules, IContentValidationRules
     {
 
-        //вынеси все валидационные сообщения в отдельный класс
         public string ValidateUniqueContentId(Content contentWithUniqueId)
         {
             return (contentWithUniqueId != null) ? ValidationErrorMessages.EntityWithIdExists<Content>(contentWithUniqueId.Id) : string.Empty;
