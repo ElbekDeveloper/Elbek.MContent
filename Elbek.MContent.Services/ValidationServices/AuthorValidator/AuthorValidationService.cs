@@ -81,14 +81,10 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         {
             var data = await _repository.GetAllAsync();
 
-            if (data.Count >= 0)
-            {
-                ValidationResult.StatusCode = (int)StatusCodes.Ok;
-            }
-            else
-            {// это еще что ?? а если в базе просто нет данных ? в любом случаем не нужно писать что случилась ошибка если ее на самом деле не было
-                ValidationResult.Errors = new List<string> { "Unhandled exception was thrown during data retrieve " };
-            }
+
+            ValidationResult.StatusCode = (int)StatusCodes.Ok;
+            
+
 
             return ValidationResult;
         }
