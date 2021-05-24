@@ -49,7 +49,7 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         {
             //Retrive data for validation
             var contentWithSimilarId = await _contentRepository.GetByIdAsync(contentDto.Id);//тут можно в запросе для валидации использовать Any(), чтобы не возврашать сущность, она все равно тут не нужна 
-            var contentWithSimilarTitle= await _contentRepository.GetByTitle(contentDto.Title, contentDto.Type); // смотри выше
+            var contentWithSimilarTitle= await _contentRepository.GetByTitleAndType(contentDto.Title, contentDto.Type); // смотри выше
             var unmatchedAuthorsInDb = await GetUnmatchedAuthorsAsync(contentDto.Authors);
 
             ValidationResult.Errors = new List<string>
