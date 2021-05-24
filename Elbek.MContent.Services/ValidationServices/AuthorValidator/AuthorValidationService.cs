@@ -52,7 +52,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         public async Task<MContentValidationResult> ValidateUpdate(Guid id, AuthorDto authorDto)
         {
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            var authorWithSimilarName = await _repository.GetByName(authorDto.Name);
 
             string checkIfAuthorWasFound = _rules.ValidateAuthorWasFound(id, authorWithSimilarId);
             
@@ -97,7 +97,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         {
             //Retrive data for validation
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            var authorWithSimilarName = await _repository.GetByName(authorDto.Name);
             
             ValidationResult.Errors = new List<string>
             {

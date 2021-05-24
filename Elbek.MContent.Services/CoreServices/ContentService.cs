@@ -12,7 +12,7 @@ namespace Elbek.MContent.Services.CoreServices
 {
     public interface IContentService : ICoreService<ContentDto>
     {
-        Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type);
+        Task<MContentResult<IList<ContentDto>>> GetByType(int type);
 
     }
     public class ContentService : IContentService
@@ -88,14 +88,14 @@ namespace Elbek.MContent.Services.CoreServices
             return ResultDto;
         }
 
-        public async Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type)
+        public async Task<MContentResult<IList<ContentDto>>> GetByType(int type)
         {
             var validationResult = _validationService.ValidateGetByType(type);
             if (!validationResult.IsValid)
             {
                 return validationResult.ConvertFromValidationResult<IList<ContentDto>>();
             }
-            var contents = await _repository.GetByTypeAsync(type);
+            var contents = await _repository.GetByType(type);
             var contentDtos = _mapper.Map<IList<ContentDto>>(contents);
 
             ResultListDto.Data = contentDtos;

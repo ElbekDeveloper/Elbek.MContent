@@ -33,7 +33,7 @@ namespace Elbek.MContent.Services.HostServices
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<MContentResult<IList<ContentDto>>> GetContents([FromRoute]int type)
         {
-            return await _service.GetByTypeAsync(type);
+            return await _service.GetByType(type);
         }
 
         [HttpPost]
