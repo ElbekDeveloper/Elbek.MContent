@@ -7,10 +7,7 @@ namespace Elbek.MContent.Services.Models
     {
         public bool IsValid
         {
-            get 
-            {
-                return !Errors.Any();
-            }
+            get => !Errors.Any();
             set {  }
         }
         public int StatusCode { get; set; }

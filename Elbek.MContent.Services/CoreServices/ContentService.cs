@@ -3,6 +3,7 @@ using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.Extensions;
 using Elbek.MContent.Services.Models;
+using Elbek.MContent.Services.Utils;
 using Elbek.MContent.Services.ValidationServices.ContentValidator;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Elbek.MContent.Services.CoreServices
 {
     public interface IContentService : ICoreService<ContentDto>
     {
-        Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type);
+        Task<MContentResult<IList<ContentDto>>> GetByType(string type);
 
     }
     public class ContentService : IContentService
@@ -88,14 +89,15 @@ namespace Elbek.MContent.Services.CoreServices
             return ResultDto;
         }
 
-        public async Task<MContentResult<IList<ContentDto>>> GetByTypeAsync(int type)
+        public async Task<MContentResult<IList<ContentDto>>> GetByType(string type)
         {
             var validationResult = _validationService.ValidateGetByType(type);
             if (!validationResult.IsValid)
             {
                 return validationResult.ConvertFromValidationResult<IList<ContentDto>>();
             }
-            var contents = await _repository.GetByTypeAsync(type);
+            var parsedType = EnumUtils.GetEnumValueOrDefault<ContentType>(type);
+            var contents = await _repository.GetByType(parsedType);
             var contentDtos = _mapper.Map<IList<ContentDto>>(contents);
 
             ResultListDto.Data = contentDtos;

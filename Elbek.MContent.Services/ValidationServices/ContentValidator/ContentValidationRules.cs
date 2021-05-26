@@ -1,43 +1,46 @@
 ﻿using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.Services.Models;
+using Elbek.MContent.Services.Utils;
 using System;
 
 namespace Elbek.MContent.Services.ValidationServices.ContentValidator
 {
     public interface IContentValidationRules: IGenericValidationRules
     {
-        string ValidateTypeRange(int type);
+        string ValidateTypeRange(string type);
         string ValidateUniqueContentId(Content authorWithUniqueId);
         string ValidateUniqueTitleOfItsType(Content contentWithUniqueTitle);
         string ValidateContentWasFound(Guid id, Content content);
     }
     public class ContentValidationRules : GenericValidationRules, IContentValidationRules
     {
+
         public string ValidateUniqueContentId(Content contentWithUniqueId)
         {
-            return (contentWithUniqueId != null) ? $"Content with Id '{contentWithUniqueId.Id}' already exists" : string.Empty;
+            return (contentWithUniqueId != null) ? ValidationErrorMessages.EntityWithIdExists<Content>(contentWithUniqueId.Id) : string.Empty;
         }
 
-        public string ValidateTypeRange(int type)
+        public string ValidateTypeRange(string type)
         {
-            var types = Enum.GetNames(typeof(ContentTypeDto));
-            if (type > types.Length - 1
-                || type < 0)
-            {
-                return $"Type '{type}' should have one of the following values: {string.Join(", ", types)}";
-            }
-            return string.Empty;
+            var isParsable = EnumUtils.TryParseWithMemberName<ContentType>(type, out _);
+            var types = Enum.GetNames(typeof(ContentType));
+
+            return (!isParsable) ? ValidationErrorMessages.InvalidTypeRange(type, types) : string.Empty;
         }
 
         public string ValidateUniqueTitleOfItsType(Content contentWithUniqueTitle)
         {
-            var types = Enum.GetNames(typeof(ContentTypeDto));
-            return (contentWithUniqueTitle != null) ? $"Content '{contentWithUniqueTitle}' with Type{types[(int)contentWithUniqueTitle.Type]} already exists" : string.Empty;
+
+            return (contentWithUniqueTitle != null) 
+                ?
+                ValidationErrorMessages.InvalidTitleForThisType(contentWithUniqueTitle.Title, contentWithUniqueTitle.Type.ToString()) 
+                :
+                string.Empty;
         }
 
         public string ValidateContentWasFound(Guid id, Content content)
         {
-            return (content == null) ? $"Content with Id {id} not found" : string.Empty;
+            return (content == null) ? ValidationErrorMessages.EntityNotFound<Content>(id) : string.Empty;
         }
     }
 }

@@ -10,7 +10,6 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
 {
     public interface IAuthorValidationService : IValidationService<AuthorDto>
     {
-
     }
 
     public class AuthorValidationService : IAuthorValidationService
@@ -53,7 +52,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         public async Task<MContentValidationResult> ValidateUpdate(Guid id, AuthorDto authorDto)
         {
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            var authorWithSimilarName = await _repository.GetByName(authorDto.Name);
 
             string checkIfAuthorWasFound = _rules.ValidateAuthorWasFound(id, authorWithSimilarId);
             
@@ -82,15 +81,8 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         {
             var data = await _repository.GetAllAsync();
 
-            if (data.Count >= 0)
-            {
-                ValidationResult.StatusCode = (int)StatusCodes.Ok;
-            }
-            else
-            {
-                ValidationResult.Errors = new List<string> { "Unhandled exception was thrown during data retrieve " };
-            }
-
+            ValidationResult.StatusCode = (int)StatusCodes.Ok;
+            
             return ValidationResult;
         }
 
@@ -98,7 +90,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         {
             //Retrive data for validation
             var authorWithSimilarId = await _repository.GetByIdAsync(authorDto.Id);
-            var authorWithSimilarName = await _repository.GetAuthorByName(authorDto.Name);
+            var authorWithSimilarName = await _repository.GetByName(authorDto.Name);
             
             ValidationResult.Errors = new List<string>
             {
@@ -114,5 +106,6 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             }
             return ValidationResult;
         }
+
     }
 }
