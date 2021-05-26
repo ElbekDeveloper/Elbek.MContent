@@ -15,7 +15,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         string ValidateIfIdsAreSame(Guid idFromRoute, Guid idFromBody);
         string ValidateIfAnyAuthorExists(ICollection<AuthorDto> authorDtos);
         string ValidateAgainstDuplicates(ICollection<AuthorDto> authorDtos);
-        string ValidateMatchingAuthors(IEnumerable<Author> authors,ICollection<AuthorDto> authorDtos);
+        List<string> ValidateMatchingAuthors(IEnumerable<Author> authors,ICollection<AuthorDto> authorDtos);
 
     }
     public class AuthorValidationRules : GenericValidationRules, IAuthorValidationRules
@@ -62,16 +62,29 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             return authorWithUniqueName != null ? ValidationErrorMessages.AuthorExists(authorWithUniqueName.Name) : string.Empty;
         }
 
-        public string ValidateMatchingAuthors(IEnumerable<Author> authors,ICollection<AuthorDto> authorDtos)
+        public List<string> ValidateMatchingAuthors(IEnumerable<Author> authors,ICollection<AuthorDto> authorDtos)
         {
-            if (authors.Count() != authorDtos.Count())
-            {
-                var ids = string.Join(", ", authorDtos.Select(a => a.Id));
-                var names = string.Join(", ", authorDtos.Select(a => a.Name));
+            var result = new List<string>();
 
-                return authorDtos != null ? ValidationErrorMessages.AuthorNotFound(ids, names) : string.Empty;
+            var notExistingById = authorDtos.Where(x => !authors.Select(z => z.Id).Contains(x.Id)).ToList();
+            var notExistingByName = authorDtos.Where(x => !authors.Select(z => z.Name).Contains(x.Name)).ToList();
+
+            if (notExistingById.Any() || notExistingByName.Any())
+            {
+                result.AddRange(notExistingById.Select(x => ValidationErrorMessages.Author.AuthorNotFoundId(x.Id)));
+                result.AddRange(notExistingByName.Select(x => ValidationErrorMessages.Author.AuthorNotFoundName(x.Name)));
             }
-            return string.Empty;
+
+            return result;
+
+            //if (authors.Count() != authorDtos.Count())
+            //{
+            //    var ids = string.Join(", ", authorDtos.Select(a => a.Id));
+            //    var names = string.Join(", ", authorDtos.Select(a => a.Name));
+
+            //    return authorDtos != null ? ValidationErrorMessages.AuthorNotFound(ids, names) : string.Empty;
+            //}
+            //return string.Empty;
         }
     }
 }

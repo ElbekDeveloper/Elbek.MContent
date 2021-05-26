@@ -14,6 +14,8 @@ namespace Elbek.MContent.Services.CoreServices
     {
 
     }
+
+
     public class AuthorService : IAuthorService
     {
         private readonly IAuthorRepository _repository;
@@ -21,12 +23,14 @@ namespace Elbek.MContent.Services.CoreServices
         private readonly IAuthorValidationService _validationService;
         public MContentResult<AuthorDto> ResultDto { get; set; } = new MContentResult<AuthorDto>();
         public MContentResult<IList<AuthorDto>> ResultListDto { get; set; } = new MContentResult<IList<AuthorDto>>();
+
         public AuthorService(IAuthorRepository repository, IMapper mapper, IAuthorValidationService validationService)
         {
             _repository = repository;
             _mapper = mapper;
             _validationService = validationService;
         }
+
         public async Task<MContentResult<AuthorDto>> AddAsync(AuthorDto authorDto)
         {
             //Validate
@@ -35,13 +39,17 @@ namespace Elbek.MContent.Services.CoreServices
             {
                 return validationResult.ConvertFromValidationResult<AuthorDto>();
             }
+
             //Map to domain object
             var entityForDb = _mapper.Map<Author>(authorDto);
-            var addedEntity =   await _repository.AddAsync(entityForDb);
+            var addedEntity = await _repository.AddAsync(entityForDb);
             //Map to dto
             var resultEntity = _mapper.Map<AuthorDto>(addedEntity);
+
+            return new MContentResult<AuthorDto> {Data = resultEntity, StatusCode = (int) StatusCodes.Created};
+
             ResultDto.Data = resultEntity;
-            ResultDto.StatusCode = (int)StatusCodes.Created;
+            ResultDto.StatusCode = (int) StatusCodes.Created;
             return ResultDto;
         }
 

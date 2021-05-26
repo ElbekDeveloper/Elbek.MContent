@@ -1,4 +1,6 @@
-﻿using Elbek.MContent.Services.Models;
+﻿using System;
+using Elbek.MContent.DataAccess.Data;
+using Elbek.MContent.Services.Models;
 
 namespace Elbek.MContent.Services.Extensions
 {
@@ -15,5 +17,26 @@ namespace Elbek.MContent.Services.Extensions
 
             return result;
         }
+
+        public static ContentType ToContentType(this string value)
+        {
+            if (Enum.TryParse(typeof(ContentType), value, true, out var result))
+            {
+                return (ContentType)result;
+            }
+
+            return default;
+        }
+
+        //public static bool TryParseWithMemberName2<TEnum>(string value, out object result)
+        //{
+        //    return Enum.TryParse(typeof(TEnum), value, true, out result);
+        //}
+
+        //public static TEnum? GetEnumValueOrDefault2<TEnum>(string value) where TEnum : struct
+        //{
+        //    Enum.TryParse(typeof(TEnum), value, true, out var result);
+        //    return (TEnum?)result;
+        //}
     }
 }

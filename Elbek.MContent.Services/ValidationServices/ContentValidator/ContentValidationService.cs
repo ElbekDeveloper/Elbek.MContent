@@ -33,29 +33,39 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
         }
         public async Task<IEnumerable<Author>> GetCorrespondingAuthorsAsync(ICollection<AuthorDto> authorDtos)
         {
-            var result = new List<Author>();
-            foreach (var authorDto in authorDtos)
-            {
-                if (authorDto.Id != Guid.Empty)
-                {
-                     result.Add(await _authorRepository.GetByIdAsync(authorDto.Id));
-                }
-                 result.Add(await _authorRepository.GetByName(authorDto.Name));
-            }
-            return result;
+           // var result = new List<Author>();
+
+            var authorsIds = authorDtos.Where(x => x.Id != Guid.Empty).Select(x=>x.Id).ToList();
+            var authorsNames = authorDtos.Where(x => x.Name != string.Empty).Select(x => x.Name).ToList();
+
+            //foreach (var authorDto in authorDtos)
+            //{
+            //    if (authorDto.Id != Guid.Empty)
+            //    {
+            //         result.Add(await _authorRepository.GetByIdAsync(authorDto.Id));
+            //    }
+            //     result.Add(await _authorRepository.GetByName(authorDto.Name));
+            //}
+
+            return await _authorRepository.Get(authorsIds, authorsNames);
         }
-        public  async Task<MContentValidationResult> ValidateAdd(ContentDto contentDto)
+
+        public async Task<MContentValidationResult> ValidateAdd(ContentDto contentDto)
         {
             //Retrive data for validation
-            var contentWithSimilarId = await _contentRepository.GetByIdAsync(contentDto.Id);//тут можно в запросе для валидации использовать Any(), чтобы не возврашать сущность, она все равно тут не нужна 
+            var contentWithSimilarId =
+                await _contentRepository
+                    .GetByIdAsync(contentDto
+                        .Id); //тут можно в запросе для валидации использовать Any(), чтобы не возврашать сущность, она все равно тут не нужна 
             Content contentWithSimilarTitle = null;
             var isParsable = EnumUtils.TryParseWithMemberName<ContentType>(contentDto.Type, out _);
             if (isParsable)
             {
                 var parsedType = EnumUtils.GetEnumValueOrDefault<ContentType>(contentDto.Type);
-               contentWithSimilarTitle  = await _contentRepository.GetByTitleAndType(contentDto.Title, parsedType);
+                contentWithSimilarTitle = await _contentRepository.GetByTitleAndType(contentDto.Title, parsedType);
             }
-           // смотри выше
+
+            // смотри выше
             var correnspondingAuthorsInDb = await GetCorrespondingAuthorsAsync(contentDto.Authors);
 
             ValidationResult.Errors = new List<string>
@@ -68,14 +78,18 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
                 _contentRules.ValidateIfNullOrEmpty(contentDto.Type.ToString()),
                 _contentRules.ValidateTypeRange(contentDto.Type),
                 _authorRules.ValidateIfAnyAuthorExists(contentDto.Authors),
-                _authorRules.ValidateMatchingAuthors(correnspondingAuthorsInDb, contentDto.Authors),
                 _authorRules.ValidateAgainstDuplicates(contentDto.Authors)
-            }.Where(e => !string.IsNullOrEmpty(e)).ToList();
+            };
+
+            ValidationResult.Errors.AddRange(_authorRules.ValidateMatchingAuthors(correnspondingAuthorsInDb, contentDto.Authors));
+
+            ValidationResult.Errors = ValidationResult.Errors.Where(e => !string.IsNullOrEmpty(e)).ToList();
 
             if (!ValidationResult.IsValid)
             {
-                ValidationResult.StatusCode = (int)StatusCodes.BadRequest;
+                ValidationResult.StatusCode = (int) StatusCodes.BadRequest;
             }
+
             return ValidationResult;
         }
 

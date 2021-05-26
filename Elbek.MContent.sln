@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elbek.MContent.WebHost", "E
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Elbek.MContent.Database", "Elbek.MContent.Database\Elbek.MContent.Database.sqlproj", "{238B9B6A-202B-4A87-959C-2E9EA4232FBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elbek.MContent.DataAccess", "Elbek.MContent.DataAccess\Elbek.MContent.DataAccess.csproj", "{C3778444-4979-4F16-83FF-5462C14226DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elbek.MContent.DataAccess", "Elbek.MContent.DataAccess\Elbek.MContent.DataAccess.csproj", "{C3778444-4979-4F16-83FF-5462C14226DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elbek.MContent.Services", "Elbek.MContent.Services\Elbek.MContent.Services.csproj", "{B1C89E41-0EAF-48DA-A57E-91B1F65C1516}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elbek.MContent.Services", "Elbek.MContent.Services\Elbek.MContent.Services.csproj", "{B1C89E41-0EAF-48DA-A57E-91B1F65C1516}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

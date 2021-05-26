@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Elbek.MContent.DataAccess.Data;
 
 namespace Elbek.MContent.Services.Utils
 {
@@ -38,9 +39,11 @@ namespace Elbek.MContent.Services.Utils
                     return true;
                 }
             }
+
             return false;
         }
-        
+
+      
 
         /// <summary>
         /// Gets the enum value from a string honoring the EnumMemberAttribute if present 
@@ -51,6 +54,17 @@ namespace Elbek.MContent.Services.Utils
                 return result;
 
             return default;
+        }
+
+        public static bool TryParseWithMemberName2<TEnum>(string value, out object result)
+        {
+            return Enum.TryParse(typeof(TEnum), value, true, out result);
+        }
+
+        public static TEnum? GetEnumValueOrDefault2<TEnum>(string value) where TEnum : struct
+        {
+            Enum.TryParse(typeof(TEnum), value, true, out var result);
+            return (TEnum?) result;
         }
     }
 }

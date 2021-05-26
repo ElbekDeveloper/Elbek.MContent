@@ -19,5 +19,12 @@ namespace Elbek.MContent.Services.ValidationServices
         public static string AuthorNotFound(string name) => $"Author with Name {name} not found.";
         public static string AuthorNotFound(string ids, string names) => $"Author with {ids} or {names} was not found.";
         public static string AuthorExists(string name) => $"Author  '{name}' already exists.";
+
+
+        public class Author
+        {
+            public static string AuthorNotFoundId(Guid id) => $"Author with Id '{id}' was not found.";
+            public static string AuthorNotFoundName(string name) => $"Author with Name '{name}' was not found.";
+        }
     }
 }
