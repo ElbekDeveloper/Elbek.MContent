@@ -15,7 +15,7 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
         string ValidateIfIdsAreSame(Guid idFromRoute, Guid idFromBody);
         string ValidateIfAnyAuthorExists(ICollection<AuthorDto> authorDtos);
         string ValidateAgainstDuplicates(ICollection<AuthorDto> authorDtos);
-        string ValidateUnmatchedAuthors(ICollection<AuthorDto> authorDtos);
+        string ValidateMatchingAuthors(IEnumerable<Author> authors,ICollection<AuthorDto> authorDtos);
 
     }
     public class AuthorValidationRules : GenericValidationRules, IAuthorValidationRules
@@ -37,8 +37,6 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
 
             return duplicates.Any() ? ValidationErrorMessages.DuplicateAuthors() : string.Empty;
         }
-
-
 
         public string ValidateIfAnyAuthorExists(ICollection<AuthorDto> authorDtos)
         {
@@ -64,12 +62,16 @@ namespace Elbek.MContent.Services.ValidationServices.AuthorValidator
             return authorWithUniqueName != null ? ValidationErrorMessages.AuthorExists(authorWithUniqueName.Name) : string.Empty;
         }
 
-        public string ValidateUnmatchedAuthors(ICollection<AuthorDto> authorDtos)
+        public string ValidateMatchingAuthors(IEnumerable<Author> authors,ICollection<AuthorDto> authorDtos)
         {
-            var ids = string.Join(", ", authorDtos.Select(a => a.Id));
-            var names = string.Join(", ", authorDtos.Select(a => a.Name));
+            if (authors.Count() != authorDtos.Count())
+            {
+                var ids = string.Join(", ", authorDtos.Select(a => a.Id));
+                var names = string.Join(", ", authorDtos.Select(a => a.Name));
 
-            return authorDtos != null ? ValidationErrorMessages.AuthorNotFound(ids, names) : string.Empty;
+                return authorDtos != null ? ValidationErrorMessages.AuthorNotFound(ids, names) : string.Empty;
+            }
+            return string.Empty;
         }
     }
 }

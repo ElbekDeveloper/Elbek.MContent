@@ -1,6 +1,7 @@
 ﻿using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.DataAccess.Repositories;
 using Elbek.MContent.Services.Models;
+using Elbek.MContent.Services.Utils;
 using Elbek.MContent.Services.ValidationServices.AuthorValidator;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
 {
     public interface IContentValidationService : IValidationService<ContentDto>
     {
-        MContentValidationResult ValidateGetByType(int type);
+        MContentValidationResult ValidateGetByType(string type);
     }
     public class ContentValidationService : IContentValidationService
     {
@@ -30,27 +31,32 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
             _authorRules = authorRules;
             _authorRepository = authorRepository;
         }
-        public async Task<ICollection<AuthorDto>> GetUnmatchedAuthorsAsync(ICollection<AuthorDto> authorDtos)
+        public async Task<IEnumerable<Author>> GetCorrespondingAuthorsAsync(ICollection<AuthorDto> authorDtos)
         {
-            throw new NotImplementedException();
-            var unmatchingAuthorsInDb = new Collection<AuthorDto>();
-            //Validate authors existence in db
+            var result = new List<Author>();
             foreach (var authorDto in authorDtos)
             {
-                var hasDefaultId = _authorRules.ValidateGuidIfDefault(authorDto.Id);
-                if (!string.IsNullOrEmpty(hasDefaultId))
+                if (authorDto.Id != Guid.Empty)
                 {
-
+                     result.Add(await _authorRepository.GetByIdAsync(authorDto.Id));
                 }
+                 result.Add(await _authorRepository.GetByName(authorDto.Name));
             }
-            return unmatchingAuthorsInDb;
+            return result;
         }
         public  async Task<MContentValidationResult> ValidateAdd(ContentDto contentDto)
         {
             //Retrive data for validation
             var contentWithSimilarId = await _contentRepository.GetByIdAsync(contentDto.Id);//тут можно в запросе для валидации использовать Any(), чтобы не возврашать сущность, она все равно тут не нужна 
-            var contentWithSimilarTitle= await _contentRepository.GetByTitleAndType(contentDto.Title, contentDto.Type); // смотри выше
-            var unmatchedAuthorsInDb = await GetUnmatchedAuthorsAsync(contentDto.Authors);
+            Content contentWithSimilarTitle = null;
+            var isParsable = EnumUtils.TryParseWithMemberName<ContentType>(contentDto.Type, out _);
+            if (isParsable)
+            {
+                var parsedType = EnumUtils.GetEnumValueOrDefault<ContentType>(contentDto.Type);
+               contentWithSimilarTitle  = await _contentRepository.GetByTitleAndType(contentDto.Title, parsedType);
+            }
+           // смотри выше
+            var correnspondingAuthorsInDb = await GetCorrespondingAuthorsAsync(contentDto.Authors);
 
             ValidationResult.Errors = new List<string>
             {
@@ -62,7 +68,7 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
                 _contentRules.ValidateIfNullOrEmpty(contentDto.Type.ToString()),
                 _contentRules.ValidateTypeRange(contentDto.Type),
                 _authorRules.ValidateIfAnyAuthorExists(contentDto.Authors),
-                _authorRules.ValidateUnmatchedAuthors(unmatchedAuthorsInDb),
+                _authorRules.ValidateMatchingAuthors(correnspondingAuthorsInDb, contentDto.Authors),
                 _authorRules.ValidateAgainstDuplicates(contentDto.Authors)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList();
 
@@ -114,12 +120,12 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
             throw new NotImplementedException();
         }
 
-        public MContentValidationResult ValidateGetByType(int type)
+        public MContentValidationResult ValidateGetByType(string type)
         {
             ValidationResult.Errors = new List<string>
             {
                 _contentRules.ValidateTypeRange(type),
-                _contentRules.ValidateIfNullOrEmpty(type.ToString())
+                _contentRules.ValidateIfNullOrEmpty(type)
             }.Where(e => !string.IsNullOrEmpty(e)).ToList(); ;
 
             if (ValidationResult.Errors.Any())

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.Services.Models;
+using Elbek.MContent.Services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,14 +29,12 @@ namespace Elbek.MContent.Services.MappingProfiles
                             a => new ContentAuthors
                             {
                                 Id = Guid.NewGuid(),
-                               // Author = new Author { Id = a.Id, Name = a.Name },
                                 AuthorId = a.Id,
                                 ContentId = dto.Id,
-                                //Content = new Content { Id = dto.Id, Title = dto.Title, Type = (ContentType)dto.Type }
                             }
                         )
                     )
-                );
+                ).ForMember(c => c.Type, opt => opt.MapFrom(dto => EnumUtils.GetEnumValueOrDefault<ContentType>(dto.Type)));
             //Custom mapping logic ends here
 
         }

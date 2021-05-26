@@ -1,12 +1,13 @@
 ﻿using Elbek.MContent.DataAccess.Data;
 using Elbek.MContent.Services.Models;
+using Elbek.MContent.Services.Utils;
 using System;
 
 namespace Elbek.MContent.Services.ValidationServices.ContentValidator
 {
     public interface IContentValidationRules: IGenericValidationRules
     {
-        string ValidateTypeRange(int type);
+        string ValidateTypeRange(string type);
         string ValidateUniqueContentId(Content authorWithUniqueId);
         string ValidateUniqueTitleOfItsType(Content contentWithUniqueTitle);
         string ValidateContentWasFound(Guid id, Content content);
@@ -19,37 +20,20 @@ namespace Elbek.MContent.Services.ValidationServices.ContentValidator
             return (contentWithUniqueId != null) ? ValidationErrorMessages.EntityWithIdExists<Content>(contentWithUniqueId.Id) : string.Empty;
         }
 
-        public string ValidateTypeRange(int type)
+        public string ValidateTypeRange(string type)
         {
-            throw new NotImplementedException();
-            string[] types = Enum.GetNames(typeof(ContentType));
+            var isParsable = EnumUtils.TryParseWithMemberName<ContentType>(type, out _);
+            var types = Enum.GetNames(typeof(ContentType));
 
-            //а что если у тебя в enum числа будет не стандартные ?
-            //например
-            //public enum ContentTypeDto
-            //{
-            //    Book = 14,
-            //    Song = 0,
-            //    Movie = 100,
-            //    Podcast = 42
-            //}
-            //
-            //валидацию переделать
-            if (type > types.Length - 1
-                || type < 0)
-            {
-                //return InvalidTypeRange(type, types);
-            }
-            return string.Empty;
+            return (!isParsable) ? ValidationErrorMessages.InvalidTypeRange(type, types) : string.Empty;
         }
 
         public string ValidateUniqueTitleOfItsType(Content contentWithUniqueTitle)
         {
-            var types = Enum.GetNames(typeof(ContentTypeDto));                                          ////а что если у тебя в enum числа будет не стандартные ?
-                                                                                                        //сообщение переделать
+
             return (contentWithUniqueTitle != null) 
                 ?
-                ValidationErrorMessages.InvalidTitleForThisType(contentWithUniqueTitle.Title, types[(int)contentWithUniqueTitle.Type]) 
+                ValidationErrorMessages.InvalidTitleForThisType(contentWithUniqueTitle.Title, contentWithUniqueTitle.Type.ToString()) 
                 :
                 string.Empty;
         }

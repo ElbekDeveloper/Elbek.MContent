@@ -8,8 +8,8 @@ namespace Elbek.MContent.DataAccess.Repositories
 {
     public interface IContentRepository: IRepository<Content>
     {
-        Task<IList<Content>> GetByType(int type);
-        Task<Content> GetByTitleAndType(string title, int type);
+        Task<IList<Content>> GetByType(ContentType? type);
+        Task<Content> GetByTitleAndType(string title, ContentType? type);
 
     }
     public class ContentRepository : BaseRepository<Content>, IContentRepository
@@ -18,14 +18,14 @@ namespace Elbek.MContent.DataAccess.Repositories
         {
         }
 
-        public async Task<IList<Content>> GetByType(int type)
+        public async Task<IList<Content>> GetByType(ContentType? type)
         {
-            return await Query().AsNoTracking().Where(c => (int)c.Type == type).ToListAsync();
+            return await Query().AsNoTracking().Where(c => c.Type == type).ToListAsync();
         }
 
-        public async Task<Content> GetByTitleAndType(string title, int type)
+        public async Task<Content> GetByTitleAndType(string title, ContentType? type)
         {
-            return await Query().AsNoTracking().SingleOrDefaultAsync(c => c.Title == title && (int)c.Type == type);
+            return await Query().AsNoTracking().SingleOrDefaultAsync(c => c.Title == title && c.Type == type);
         }
 
         public override IQueryable<Content> Query()
